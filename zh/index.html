@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0F766E" />
+
+<title>cosyncing —— 代码随处。同步无界。</title>
+<meta name="description" content="代码随处，同步无界。让 Claude Code、Codex、OpenCode 与 Pi 会话通过你自己的网络保持同步。自托管、无需账号、不含分析遥测。" />
+<link rel="canonical" href="https://cosyncing.github.io/zh/" />
+<link rel="alternate" hreflang="en" href="https://cosyncing.github.io/" />
+<link rel="alternate" hreflang="zh-CN" href="https://cosyncing.github.io/zh/" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="cosyncing —— 代码随处。同步无界。" />
+<meta property="og:description" content="让编码智能体从 CLI 到 GUI、从桌面到手机，通过你自己的网络保持同步。" />
+<meta property="og:url" content="https://cosyncing.github.io/zh/" />
+<meta property="og:image" content="https://cosyncing.github.io/assets/brand/og-image.png" />
+<meta name="twitter:card" content="summary_large_image" />
+
+<link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+<link rel="icon" type="image/x-icon" href="../assets/icons/favicon.ico" sizes="any" />
+<link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon-180.png" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600&family=Fira+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+<script>
+  (function () {
+    document.documentElement.classList.add('js');
+    try {
+      var saved = localStorage.getItem('cosyncing-site-theme');
+      var dark = saved ? saved === 'dark'
+        : (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches);
+      if (dark) document.documentElement.classList.add('dark');
+    } catch (e) {}
+  })();
+</script>
+
+<style>
+  /* Same token family as index.html — this variant differs in composition. */
+  :root {
+    --canvas: #F2F5F4;
+    --surface: #FFFFFF;
+    --surface2: #E6ECEB;
+    --separator: #DBE3E1;
+    --text: #1E2927;
+    --text2: #5F7370;
+    --text3: #84948F;
+    --accent: #0F766E;
+    --accent-bright: #14B8A6;
+    --accent-ink: #FFFFFF;
+    --radius-lg: 18px;
+    --shadow-md: 0 8px 24px rgba(20, 40, 38, 0.08);
+    --shadow-lg: 0 18px 48px rgba(20, 40, 38, 0.14);
+  }
+  html.dark {
+    --canvas: #0B0E14;
+    --surface: #121722;
+    --surface2: #1B2332;
+    --separator: #232F42;
+    --text: #E2E8F0;
+    --text2: #94A3B8;
+    --text3: #5F6B7C;
+    --accent: #2DD4BF;
+    --accent-bright: #2DD4BF;
+    --accent-ink: #0B0E14;
+    --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.4);
+    --shadow-lg: 0 18px 48px rgba(0, 0, 0, 0.55);
+  }
+
+  html, body { min-height: 100%; overflow-x: clip; }
+  html { scroll-behavior: smooth; scroll-padding-top: 84px; }
+  body {
+    margin: 0;
+    font-family: "Fira Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", ui-sans-serif, system-ui, sans-serif;
+    background: var(--canvas);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+    transition: background 240ms ease, color 240ms ease;
+  }
+  .mono { font-family: "Fira Code", ui-monospace, Menlo, Consolas, monospace; }
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 0 24px; }
+  a { color: var(--accent); }
+
+  /* ---- Nav: floating pill ---- */
+  .site-nav { position: sticky; top: 14px; z-index: 50; padding: 0 16px; }
+  .site-nav .bar {
+    max-width: 1120px; margin: 0 auto;
+    display: flex; align-items: center; gap: 14px;
+    padding: 10px 14px 10px 18px;
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--surface) 88%, transparent);
+    border: 1px solid var(--separator);
+    box-shadow: var(--shadow-md);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+  }
+  .brand { display: flex; align-items: center; gap: 9px; text-decoration: none; color: var(--text); font-weight: 800; font-size: 1.02rem; }
+  .brand img { height: 24px; width: 24px; }
+  .nav-links { display: flex; align-items: center; gap: 2px; margin-left: auto; }
+  .nav-link {
+    color: var(--text2); text-decoration: none; font-size: 0.9rem; font-weight: 600;
+    padding: 7px 12px; border-radius: 999px; transition: color 180ms ease, background 180ms ease;
+  }
+  .nav-link:hover { color: var(--text); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .icon-btn {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: 999px;
+    border: 1px solid var(--separator); background: transparent; color: var(--text2);
+    cursor: pointer; transition: color 180ms ease, border-color 180ms ease;
+  }
+  .icon-btn:hover { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 45%, var(--separator)); }
+  html.dark .sun { display: block; } html.dark .moon { display: none; }
+  .sun { display: none; }
+  @media (max-width: 840px) { .nav-links .nav-link { display: none; } .nav-links .nav-link.keep { display: block; } }
+
+  /* ---- Hero: centered, screenshot below ---- */
+  .hero { padding: 88px 0 30px; text-align: center; position: relative; }
+  .hero::before {
+    content: ""; position: absolute; inset: -80px 0 auto; height: 560px; z-index: -1;
+    background:
+      radial-gradient(640px 320px at 50% 0%, color-mix(in srgb, var(--accent) 16%, transparent), transparent 70%);
+  }
+  .chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 7px 16px; border-radius: 999px; font-size: 0.85rem; font-weight: 700;
+    color: var(--accent);
+    background: color-mix(in srgb, var(--accent) 10%, transparent);
+    border: 1px solid color-mix(in srgb, var(--accent) 28%, transparent);
+  }
+  .hero h1 {
+    font-size: clamp(2.6rem, 6.4vw, 4.3rem); line-height: 1.04;
+    font-weight: 800; letter-spacing: -0.03em; margin: 22px auto 14px; max-width: 15ch;
+  }
+  .hero h1 em { font-style: normal; color: var(--accent); }
+  .hero .tag { font-size: clamp(1.02rem, 2vw, 1.25rem); color: var(--text2); max-width: 56ch; margin: 0 auto; line-height: 1.6; }
+  .cta-row { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin-top: 30px; }
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+    border-radius: 999px; padding: 14px 26px; min-height: 50px;
+    font-weight: 700; font-size: 1rem; text-decoration: none; cursor: pointer;
+    transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent) 0%, var(--accent-bright) 100%);
+    color: var(--accent-ink); border: none;
+    box-shadow: 0 12px 28px rgba(15, 118, 110, 0.30);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 16px 34px rgba(15, 118, 110, 0.36); }
+  .btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--separator); }
+  .btn-ghost:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--separator)); transform: translateY(-1px); }
+
+  .hero-shot { margin: 54px auto 0; max-width: 1020px; }
+  .shot-frame {
+    border-radius: var(--radius-lg); overflow: hidden;
+    border: 1px solid var(--separator); box-shadow: var(--shadow-lg);
+    background: var(--surface);
+    transform: perspective(1600px) rotateX(1.5deg);
+  }
+  .shot-frame .chrome { display: flex; gap: 7px; padding: 11px 16px; background: var(--surface2); border-bottom: 1px solid var(--separator); }
+  .dot { width: 8px; height: 8px; border-radius: 50%; }
+  .shot-frame img { display: block; width: 100%; height: auto; }
+  .hero-note { font-size: 0.82rem; color: var(--text3); margin-top: 12px; }
+
+  /* ---- Agent strip ---- */
+  .agents-strip { padding: 46px 0 10px; text-align: center; }
+  .agents-strip .lbl { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--text3); }
+  .agents-strip .row { display: flex; flex-wrap: wrap; gap: 18px 34px; justify-content: center; align-items: center; margin-top: 20px; }
+  .agents-strip img { height: 32px; width: auto; display: block; opacity: 0.92; }
+
+  /* ---- Section headers ---- */
+  section.block { padding: 66px 0; }
+  .sec-head { max-width: 640px; }
+  .sec-head.center { margin: 0 auto; text-align: center; }
+  .kicker { font-size: 0.82rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); }
+  .h2 { font-size: clamp(1.7rem, 3.4vw, 2.35rem); font-weight: 800; letter-spacing: -0.02em; margin: 12px 0 12px; }
+  .lead { font-size: 1.05rem; line-height: 1.65; color: var(--text2); }
+
+  /* ---- Bento grid ---- */
+  .bento { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; margin-top: 36px; }
+  .bento .cell {
+    border-radius: var(--radius-lg); border: 1px solid var(--separator);
+    background: var(--surface); box-shadow: var(--shadow-md);
+    padding: 26px 24px; overflow: hidden;
+    transition: transform 240ms ease, box-shadow 240ms ease, border-color 240ms ease;
+  }
+  .bento .cell:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); border-color: color-mix(in srgb, var(--accent) 32%, var(--separator)); }
+  .bento .span2 { grid-column: span 2; }
+  .bento h3 { margin: 12px 0 8px; font-size: 1.1rem; font-weight: 700; }
+  .bento p { margin: 0; color: var(--text2); line-height: 1.6; font-size: 0.95rem; }
+  .bento .glyph {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; border-radius: 11px;
+    background: color-mix(in srgb, var(--accent) 12%, transparent); color: var(--accent);
+  }
+  .bento .img-cell { padding: 0; display: flex; }
+  .bento .img-cell img { width: 100%; height: 100%; object-fit: cover; object-position: top center; display: block; }
+  @media (max-width: 900px) { .bento { grid-template-columns: 1fr; } .bento .span2 { grid-column: auto; } }
+
+  /* ---- Steps ---- */
+  .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0; margin-top: 40px; position: relative; }
+  .steps::before {
+    content: ""; position: absolute; top: 25px; left: 12%; right: 12%; height: 2px;
+    background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--accent) 40%, var(--separator)) 18%, color-mix(in srgb, var(--accent) 40%, var(--separator)) 82%, transparent);
+  }
+  .step { text-align: center; padding: 0 18px; position: relative; }
+  .step .n {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 50px; height: 50px; border-radius: 999px;
+    background: var(--surface); border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--separator));
+    color: var(--accent); font-weight: 800; font-size: 1.05rem;
+    box-shadow: var(--shadow-md);
+  }
+  .step h3 { margin: 16px 0 8px; font-size: 1.06rem; font-weight: 700; }
+  .step p { margin: 0; color: var(--text2); line-height: 1.6; font-size: 0.93rem; }
+  @media (max-width: 820px) { .steps { grid-template-columns: 1fr; gap: 30px; } .steps::before { display: none; } }
+
+  /* ---- Privacy band (theme-aware) ---- */
+  .band {
+    background:
+      radial-gradient(800px 400px at 80% -20%, rgba(45, 212, 191, 0.10), transparent 60%),
+      var(--surface2);
+    color: var(--text);
+    border-radius: 26px;
+    padding: 58px 54px;
+    border: 1px solid var(--separator);
+    box-shadow: var(--shadow-md);
+  }
+  html.dark .band {
+    background:
+      radial-gradient(800px 400px at 80% -20%, rgba(45, 212, 191, 0.14), transparent 60%),
+      var(--surface2);
+  }
+  .band .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 26px; margin-top: 36px; }
+  .band .item h3 { font-size: 1.05rem; margin: 12px 0 8px; color: var(--text); }
+  .band .item p { margin: 0; color: var(--text2); line-height: 1.6; font-size: 0.94rem; }
+  .band .glyph {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 38px; height: 38px; border-radius: 11px;
+    background: rgba(45, 212, 191, 0.12); color: var(--accent);
+  }
+  @media (max-width: 860px) { .band { padding: 40px 26px; } .band .grid { grid-template-columns: 1fr; } }
+
+  /* ---- Split (attention) ---- */
+  .split { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 52px; align-items: center; }
+  @media (max-width: 900px) { .split { grid-template-columns: 1fr; } }
+  .split .visual { display: flex; justify-content: center; }
+  .split .visual img {
+    width: 100%; max-width: 360px; border-radius: var(--radius-lg);
+    border: 1px solid var(--separator); box-shadow: var(--shadow-lg);
+  }
+  .check-list { list-style: none; margin: 22px auto 0; padding: 0; display: grid; gap: 14px 28px; grid-template-columns: 1fr 1fr; max-width: 880px; text-align: left; }
+  .check-list li { display: flex; gap: 12px; align-items: flex-start; color: var(--text2); line-height: 1.55; }
+  .check-list svg { color: var(--accent); flex: none; margin-top: 3px; }
+  .check-list b { color: var(--text); }
+  @media (max-width: 720px) { .check-list { grid-template-columns: 1fr; } }
+
+  /* ---- Platforms ---- */
+  .plat { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-top: 36px; }
+  @media (max-width: 820px) { .plat { grid-template-columns: 1fr; } }
+  .plat .panel { border-radius: var(--radius-lg); border: 1px solid var(--separator); background: var(--surface); box-shadow: var(--shadow-md); padding: 26px 24px; }
+  .plat .panel .lbl { font-size: 0.8rem; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; color: var(--text3); }
+  .pill-row { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 16px; }
+  .pill {
+    display: inline-flex; align-items: center; padding: 7px 14px; border-radius: 999px;
+    background: var(--surface2); border: 1px solid var(--separator);
+    font-weight: 600; font-size: 0.88rem; color: var(--text2);
+  }
+  .plat p { color: var(--text2); font-size: 0.92rem; line-height: 1.6; margin: 16px 0 0; }
+
+  /* ---- Window frame ---- */
+  .win {
+    border-radius: var(--radius-lg); overflow: hidden;
+    border: 1px solid var(--separator); box-shadow: var(--shadow-lg);
+    background: var(--surface);
+  }
+  .win .chrome { display: flex; align-items: center; gap: 6px; padding: 6px 12px; background: var(--surface2); border-bottom: 1px solid var(--separator); }
+  .win img { display: block; width: 100%; height: auto; }
+
+  /* ---- Terminal ---- */
+  .terminal {
+    border-radius: var(--radius-lg); overflow: hidden;
+    border: 1px solid var(--separator); box-shadow: var(--shadow-lg);
+    background: var(--surface); color: var(--text);
+    max-width: 680px; margin: 32px auto 0; text-align: left;
+  }
+  .terminal .chrome { display: flex; gap: 7px; padding: 12px 16px; background: var(--surface2); border-bottom: 1px solid var(--separator); }
+  .terminal pre {
+    margin: 0; padding: 22px 24px; overflow-x: auto;
+    font-family: "Fira Code", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.92rem; line-height: 1.9;
+  }
+  .terminal .c { color: var(--text3); }
+  .terminal .p { color: var(--accent); user-select: none; }
+
+  /* ---- Footer ---- */
+  footer { border-top: 1px solid var(--separator); margin-top: 30px; }
+  footer .row { display: flex; flex-wrap: wrap; gap: 12px 26px; align-items: center; justify-content: space-between; padding: 28px 0 38px; color: var(--text3); font-size: 0.88rem; }
+  footer a { color: var(--text2); text-decoration: none; font-weight: 600; }
+  footer a:hover { color: var(--accent); }
+  footer .links { display: flex; flex-wrap: wrap; gap: 18px; }
+
+  /* ---- GitHub star button (count is a placeholder) ---- */
+  .gh-star {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 14px; border-radius: 999px; text-decoration: none;
+    border: 1px solid var(--separator); color: var(--text2);
+    font-weight: 700; font-size: 0.88rem;
+    transition: border-color 180ms ease, color 180ms ease;
+  }
+  .gh-star:hover { border-color: color-mix(in srgb, var(--accent) 45%, var(--separator)); color: var(--text); }
+  .gh-star svg { color: var(--accent); transition: transform 180ms ease; }
+  .gh-star:hover svg { transform: scale(1.15) rotate(-8deg); }
+  .gh-count {
+    padding: 1px 8px; border-radius: 999px; font-size: 12px; font-weight: 700;
+    background: color-mix(in srgb, var(--accent) 14%, transparent); color: var(--accent);
+  }
+
+  /* ---- Clients comparison ---- */
+  .compare { display: flex; align-items: flex-end; justify-content: center; gap: 26px; margin-top: 40px; }
+  .compare-desktop { flex: 1 1 auto; max-width: 800px; }
+  .compare-phone { flex: 0 0 240px; }
+  .compare-phone img { display: block; width: 100%; height: auto; }
+  @media (max-width: 820px) { .compare { flex-direction: column; align-items: center; } .compare-phone { flex-basis: auto; width: min(300px, 80%); } }
+
+  /* ---- Sync video ---- */
+  .sync-video video { display: block; width: 100%; height: auto; }
+  .video-caption {
+    margin: 14px 0 0; text-align: center;
+    font-family: "Fira Code", ui-monospace, Menlo, Consolas, monospace;
+    font-size: 0.78rem; color: var(--text3);
+  }
+
+  /* theme-aware images (any context) */
+  img.dark-only, video.dark-only { display: none; }
+  html.dark img.dark-only, html.dark video.dark-only { display: block; }
+  html.dark img.light-only, html.dark video.light-only { display: none; }
+
+  /* ---- Brand banner (theme-aware) ---- */
+  .banner img {
+    display: block; width: 100%; height: auto;
+    border-radius: var(--radius-lg); border: 1px solid var(--separator);
+    box-shadow: var(--shadow-lg);
+  }
+  .banner .dark-only { display: none; }
+  html.dark .banner .dark-only { display: block; }
+  html.dark .banner .light-only { display: none; }
+
+  html.js .reveal { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
+  html.js .reveal.in { opacity: 1; transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    html.js .reveal { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+    .shot-frame { transform: none; }
+  }
+</style>
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="bar">
+    <a class="brand" href="#top" aria-label="cosyncing 首页">
+      <img class="light-only" src="../assets/brand/cosyncing-mark-two-tone-light.svg" alt="" />
+      <img class="dark-only" src="../assets/brand/cosyncing-mark-two-tone-dark.svg" alt="" />
+      <span>cosyncing</span>
+    </a>
+    <nav class="nav-links" aria-label="主导航">
+      <a href="#features" class="nav-link">功能</a>
+      <a href="#how" class="nav-link">工作原理</a>
+      <a href="#privacy" class="nav-link">隐私</a>
+      <a href="#platforms" class="nav-link">平台</a>
+      <a href="demo/index.html" class="nav-link keep">演示</a>
+      <a href="#install" class="nav-link keep">安装</a>
+      <a href="../index.html" class="nav-link keep" lang="en" hreflang="en">EN</a>
+      <button class="icon-btn" id="theme-toggle" aria-label="切换深色模式">
+        <svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        <svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+      </button>
+      <a class="gh-star" href="https://github.com/cosyncing/cosyncing" aria-label="在 GitHub 上 Star cosyncing">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.94 6.36 6.96.8-5.16 4.73 1.4 6.85L12 17.27 5.86 20.74l1.4-6.85L2.1 9.16l6.96-.8L12 2z"/></svg>
+        <span>Star</span><span class="gh-count">&mdash;</span>
+      </a>
+    </nav>
+  </div>
+</header>
+
+<main id="top">
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="wrap">
+      <span class="chip reveal">开源 · 自托管 · Apache-2.0</span>
+      <h1 class="reveal">代码随处。<br /><em>同步无界。</em></h1>
+      <p class="tag reveal">同步你的智能体 —— 从 CLI 到 GUI，从桌面到手机。</p>
+      <p class="tag reveal" style="font-weight:400; font-size:clamp(0.95rem, 1.6vw, 1.08rem)">
+        从任何地方接着上次的进度继续。cosyncing 让你的编码智能体在你自己的网络里保持同步。
+      </p>
+    </div>
+  </section>
+
+  <!-- Brand banner -->
+  <section class="block" style="padding-top:34px; padding-bottom:20px">
+    <div class="wrap">
+      <div class="banner reveal">
+        <img class="light-only" src="../assets/brand/banner/social-banner-light-zh-2400x1260.png"
+             alt="cosyncing —— 代码随处。同步无界。智能体照常运转，你持续前行。" />
+        <img class="dark-only" src="../assets/brand/banner/social-banner-zh-2400x1260.png"
+             alt="cosyncing —— 代码随处。同步无界。智能体照常运转，你持续前行。" />
+      </div>
+    </div>
+  </section>
+
+  <!-- Install -->
+  <section id="install" class="block" style="padding-top:20px; text-align:center">
+    <div class="wrap">
+      <span class="kicker reveal">Install</span>
+      <h2 class="h2 reveal">首个公开发行包即将推出</h2>
+      <p class="lead reveal" style="max-width:600px; margin:0 auto">
+        0.1.0 尚未发布。npm 上当前的条目只是名称占位包，请勿安装。
+        请关注 GitHub Releases，等待首个受支持的发行包。
+      </p>
+      <div class="terminal reveal">
+        <div class="chrome">
+          <span class="dot" style="background:#EF4444"></span>
+          <span class="dot" style="background:#F59E0B"></span>
+          <span class="dot" style="background:#14B8A6"></span>
+        </div>
+<pre><span class="c"># 首个受支持的发行包发布后</span>
+<span class="p">$</span> npm install --global cosyncing
+<span class="p">$</span> cosyncing setup
+<span class="p">$</span> cosyncing pair</pre>
+      </div>
+      <div class="cta-row reveal" style="margin-top:34px">
+        <a href="demo/index.html" class="btn btn-primary">打开 UI 演示</a>
+        <a href="https://github.com/cosyncing/cosyncing" class="btn btn-ghost">在 GitHub 上 Star</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Clients comparison -->
+  <section id="clients" class="block" style="padding-top:26px">
+    <div class="wrap">
+      <div class="sec-head center">
+        <span class="kicker reveal">One client, every screen</span>
+        <h2 class="h2 reveal">桌面端在桌上，手机端在兜里</h2>
+        <p class="lead reveal">
+          同样的会话、同样的收件箱、同样的接管。源码与 CI 覆盖<b>六个客户端目标：Android、iOS、Linux、macOS、Windows 和网页</b>。
+          各平台发行包仍在准备中。
+        </p>
+        <div class="cta-row reveal" style="margin-top:22px">
+          <a href="demo/index.html" class="btn btn-ghost">在 UI 演示中查看每个界面</a>
+        </div>
+      </div>
+      <div class="compare reveal">
+        <div class="win compare-desktop">
+          <div class="chrome">
+            <span class="dot" style="background:#EF4444"></span>
+            <span class="dot" style="background:#F59E0B"></span>
+            <span class="dot" style="background:#14B8A6"></span>
+          </div>
+          <img class="light-only" src="../assets/shots/demo/real/light/workspace.png"
+               alt="cosyncing 桌面与网页客户端：会话列表旁边是进行中的会话聊天" />
+          <img class="dark-only" src="../assets/shots/demo/real/dark/workspace.png"
+               alt="cosyncing 桌面与网页客户端：会话列表旁边是进行中的会话聊天" />
+        </div>
+        <div class="win compare-phone">
+          <img class="light-only" src="../assets/shots/demo/real/light/sessions.png"
+               alt="cosyncing 手机客户端：会话按项目归组，附实时状态" />
+          <img class="dark-only" src="../assets/shots/demo/real/dark/sessions.png"
+               alt="cosyncing 手机客户端：会话按项目归组，附实时状态" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Sync video -->
+  <section id="sync" class="block" style="padding-top:10px">
+    <div class="wrap">
+      <div class="sec-head center">
+        <span class="kicker reveal">In sync, always</span>
+        <h2 class="h2 reveal">智能体照常运转，每个屏幕同步跟进。</h2>
+        <p class="lead reveal">
+          智能体写出的每一行，都会即时落到应用里。从任何设备发送提示词 —— 终端和应用始终一致。
+        </p>
+      </div>
+      <div class="win reveal sync-video">
+        <video class="light-only" autoplay muted loop playsinline preload="metadata">
+          <source src="../assets/sync/sync-demo-light.mp4" type="video/mp4" />
+          <img src="../assets/sync/sync-demo-light.gif" alt="同一桌面上的两个窗口：cosyncing 应用和 Codex 终端。从应用发送提示词时，两边保持同步" />
+        </video>
+        <video class="dark-only" autoplay muted loop playsinline preload="metadata">
+          <source src="../assets/sync/sync-demo-dark.mp4" type="video/mp4" />
+          <img src="../assets/sync/sync-demo-dark.gif" alt="同一桌面上的两个窗口：cosyncing 应用和 Codex 终端。从应用发送提示词时，两边保持同步" />
+        </video>
+      </div>
+      <p class="video-caption reveal">cosyncing 应用 &nbsp;&#8696;&nbsp; 智能体 CLI —— 实时</p>
+
+    </div>
+  </section>
+
+  <!-- Agent strip -->
+  <div class="agents-strip">
+    <div class="wrap">
+      <span class="lbl reveal">一套协议，四个智能体</span>
+      <div class="row reveal">
+        <img src="../assets/agents/claude.png" alt="Claude Code" />
+        <img src="../assets/agents/codex.png" alt="Codex" />
+        <img src="../assets/agents/opencode.png" alt="OpenCode" />
+        <img src="../assets/agents/pi.png" alt="Pi" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Bento features -->
+  <section id="features" class="block">
+    <div class="wrap">
+      <div class="sec-head center">
+        <span class="kicker reveal">Features</span>
+        <h2 class="h2 reveal">每个会话，触手可及</h2>
+        <p class="lead reveal">Broker 在智能体本就在运行的地方观察它们，并提供一个客户端来展示每个会话 —— 按项目归组，附带对话记录、diff、命令和提问。</p>
+      </div>
+      <div class="bento">
+        <div class="cell span2 reveal">
+          <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+          <h3>所有项目，一个空间</h3>
+          <p>做你自己所有智能体的总指挥 —— 工作中、待输入和空闲状态一目了然。打开会话即可阅读对话记录、检查 diff，并实时跟随每一次工具调用。</p>
+        </div>
+        <div class="cell reveal">
+          <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
+          <h3>通知收件箱</h3>
+          <p>权限请求、智能体提问和运行完成通知，汇聚在同一个跨多 Broker 的收件箱里。</p>
+        </div>
+        <div class="cell reveal">
+          <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
+          <h3>双向同步</h3>
+          <p>从应用发送提示词，终端照常运转 —— Codex、OpenCode、Pi 会话两端始终保持一致。Claude Code 会话在接管前保持只读。</p>
+        </div>
+        <div class="cell reveal">
+          <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+          <h3>显式配对</h3>
+          <p>设备通过一张五分钟有效、仅限一次的二维码获得授权 —— 可在 CLI 中列出和撤销。</p>
+        </div>
+        <div class="cell reveal">
+          <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
+          <h3>定时消息</h3>
+          <p>把提示词安排在指定时间送达 —— 智能体会准时收到并开始工作。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- How it works -->
+  <section id="how" class="block" style="padding-top:20px">
+    <div class="wrap">
+      <div class="sec-head center">
+        <span class="kicker reveal">How it works</span>
+        <h2 class="h2 reveal">三步搞定，无需账号</h2>
+      </div>
+      <div class="steps">
+        <div class="step reveal">
+          <span class="n">1</span>
+          <h3>运行 Broker</h3>
+          <p><span class="mono">cosyncing setup</span> 会清楚展示它将改动的内容，然后要么整体应用、要么完全不动。</p>
+        </div>
+        <div class="step reveal">
+          <span class="n">2</span>
+          <h3>配对设备</h3>
+          <p><span class="mono">cosyncing pair</span> 打印一张仅限一次的二维码。用任意客户端扫码，即可授权该设备。</p>
+        </div>
+        <div class="step reveal">
+          <span class="n">3</span>
+          <h3>持续前行</h3>
+          <p>回应提问、阅读对话记录，或直接接管 —— 在你网络里的浏览器、手机或桌面上。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Privacy band -->
+  <section id="privacy" class="block" style="padding-top:20px">
+    <div class="wrap">
+      <div class="band reveal">
+        <span class="kicker">Privacy &amp; security</span>
+        <h2 class="h2">你的机器。你的网络。你的数据。</h2>
+        <p class="lead" style="max-width:620px">
+          Broker 状态留在运行它的那台机器上。会话内容只会通过你选择的网络发送给已认证的客户端。
+        </p>
+        <div class="grid">
+          <div class="item">
+            <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+            <h3>没有托管中继</h3>
+            <p>连接路径中没有 cosyncing 运营的服务，也不含分析或广告遥测。可选集成只会联系你选择的服务。</p>
+          </div>
+          <div class="item">
+            <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
+            <h3>默认即可撤销</h3>
+            <p><span class="mono">cosyncing devices list</span> 列出已配对设备；<span class="mono">devices revoke &lt;id&gt;</span> 撤销指定设备。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Attention -->
+  <section class="block" style="padding-top:20px">
+    <div class="wrap sec-head center">
+      <span class="kicker reveal">Never miss a prompt</span>
+      <h2 class="h2 reveal">每个提问，一个收件箱</h2>
+      <p class="lead reveal">当智能体需要你时，就会出现在通知收件箱里。用手边的任何一台设备回答即可。</p>
+      <ul class="check-list reveal">
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>权限请求</b>附带完整的命令上下文 —— 一次点按即可批准或驳回。</span></li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>智能体提问</b>期间会话保持连接，回答直接落在智能体等待的地方。</span></li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>运行完成</b> —— 长任务跑完时同样会通知你，而不只是等待你回应时。</span></li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>多 Broker</b> —— 每个已配对的 Broker 都汇报到同一个列表。</span></li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- Platforms -->
+  <section id="platforms" class="block" style="padding-top:20px">
+    <div class="wrap">
+      <div class="sec-head center">
+        <span class="kicker reveal">Platform support</span>
+        <h2 class="h2 reveal">Broker 在你的工作站上，客户端无处不在</h2>
+      </div>
+      <div class="plat">
+        <div class="panel reveal">
+          <span class="lbl">Broker 运行于</span>
+          <div class="pill-row">
+            <span class="pill">macOS · Apple 芯片</span>
+            <span class="pill">Windows（经 WSL）</span>
+            <span class="pill">Linux · x64 与 arm64</span>
+          </div>
+          <p>在 Windows 上，请在 WSL 内运行 Broker —— WSL 是受支持的 Linux 宿主机。</p>
+        </div>
+        <div class="panel reveal">
+          <span class="lbl">客户端覆盖六个平台</span>
+          <div class="pill-row">
+            <span class="pill">Android</span>
+            <span class="pill">iOS</span>
+            <span class="pill">Linux</span>
+            <span class="pill">macOS</span>
+            <span class="pill">Windows</span>
+            <span class="pill">Web</span>
+          </div>
+          <p>发行包内的网页客户端由你自己的 Broker 在 <span class="mono">/cosy/</span> 提供；首个受支持的发行包仍在准备中。</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div class="wrap row">
+    <span>cosyncing —— 代码随处。同步无界。 · Apache-2.0</span>
+    <nav class="links" aria-label="页脚导航">
+      <a href="https://github.com/cosyncing/cosyncing">GitHub</a>
+      <a href="https://github.com/cosyncing/cosyncing/blob/main/docs/README.md">文档</a>
+      <a href="https://github.com/cosyncing/cosyncing/blob/main/CONTRIBUTING.md">参与贡献</a>
+      <a href="demo/index.html">演示</a>
+    </nav>
+  </div>
+</footer>
+
+<script>
+  (function () {
+    var btn = document.getElementById('theme-toggle');
+    btn.addEventListener('click', function () {
+      var dark = document.documentElement.classList.toggle('dark');
+      try { localStorage.setItem('cosyncing-site-theme', dark ? 'dark' : 'light'); } catch (e) {}
+    });
+  })();
+  (function () {
+    var els = document.querySelectorAll('.reveal');
+    if (!('IntersectionObserver' in window)) {
+      els.forEach(function (el) { el.classList.add('in'); });
+      return;
+    }
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+      });
+    }, { threshold: 0.12 });
+    els.forEach(function (el) { io.observe(el); });
+  })();
+</script>
+
+</body>
+</html>
