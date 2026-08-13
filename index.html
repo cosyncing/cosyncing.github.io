@@ -122,6 +122,15 @@
   html.dark .sun { display: block; } html.dark .moon { display: none; }
   .sun { display: none; }
   @media (max-width: 840px) { .nav-links .nav-link { display: none; } .nav-links .nav-link.keep { display: block; } }
+  /* Phones: the bar would otherwise run past the viewport and get clipped. */
+  @media (max-width: 560px) {
+    .site-nav { padding: 0 10px; }
+    .site-nav .bar { gap: 6px; padding: 9px 10px 9px 12px; }
+    .site-nav .brand { font-size: 0.96rem; gap: 7px; }
+    .site-nav .nav-links { gap: 0; }
+    .site-nav .nav-links .nav-link { padding: 6px 8px; font-size: 0.86rem; white-space: nowrap; }
+    .site-nav .gh-star { display: none; }
+  }
 
   /* ---- Hero: centered, screenshot below ---- */
   .hero { padding: 88px 0 30px; text-align: center; position: relative; }
