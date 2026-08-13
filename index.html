@@ -377,7 +377,7 @@
       <a href="#features" class="nav-link">Features</a>
       <a href="#how" class="nav-link">How it works</a>
       <a href="#privacy" class="nav-link">Privacy</a>
-      <a href="#platforms" class="nav-link">Platforms</a>
+      <a href="#clients" class="nav-link">Client</a>
       <a href="demo/index.html" class="nav-link keep">Demo</a>
       <a href="#install" class="nav-link keep">Install</a>
       <a href="zh/index.html" class="nav-link keep" lang="zh-CN" hreflang="zh-CN">中文</a>
@@ -424,10 +424,11 @@
   <section id="install" class="block" style="padding-top:20px; text-align:center">
     <div class="wrap">
       <span class="kicker reveal">Install</span>
-      <h2 class="h2 reveal">Install cosyncing 0.1.0</h2>
+      <h2 class="h2 reveal">Install cosyncing</h2>
       <p class="lead reveal" style="max-width:600px; margin:0 auto">
-        The first supported npm release is available now. Install Bun 1.3.8 or newer first;
-        the cosyncing package does not bundle the Bun runtime.
+        Install Tailscale on the server and client devices. The server needs Bun 1.3.8 or newer to run
+        cosyncing and Node.js/npm to install and update it. Setting up
+        <a href="https://github.com/JingbiaoMei/tokdash">Tokdash</a> is strongly recommended for quota tracking and warnings.
       </p>
       <div class="terminal reveal">
         <div class="chrome">
@@ -435,13 +436,15 @@
           <span class="dot" style="background:#F59E0B"></span>
           <span class="dot" style="background:#14B8A6"></span>
         </div>
-<pre><span class="c"># Requires Bun 1.3.8 or newer</span>
+<pre><span class="c"># Tailscale signed in; Bun 1.3.8+ and Node.js/npm installed</span>
 <span class="p">$</span> npm install --global cosyncing
 <span class="p">$</span> cosyncing setup
-<span class="p">$</span> cosyncing pair</pre>
+<span class="c"># After setup, cosy is the shorthand for cosyncing</span>
+<span class="p">$</span> cosy pair</pre>
       </div>
       <div class="cta-row reveal" style="margin-top:34px">
         <a href="demo/index.html" class="btn btn-primary">Open the UI demo</a>
+        <a href="https://github.com/cosyncing/cosyncing/blob/main/docs/installation/prerequisites.md" class="btn btn-ghost">Read prerequisites</a>
         <a href="https://github.com/cosyncing/cosyncing" class="btn btn-ghost">Star on GitHub</a>
       </div>
     </div>
@@ -451,15 +454,17 @@
   <section id="clients" class="block" style="padding-top:26px">
     <div class="wrap">
       <div class="sec-head center">
-        <span class="kicker reveal">One client, every screen</span>
+        <span class="kicker reveal">Client</span>
         <h2 class="h2 reveal">Desktop at your desk, phone in your pocket</h2>
         <p class="lead reveal">
           The same sessions, the same inbox, the same take-over. The source tree and CI cover
           <b>six client targets: Android, iOS, Linux, macOS, Windows, and the web</b>.
-          Packaged client downloads are still being prepared.
+          Packaged Android and desktop clients are available from GitHub Releases. iOS will follow
+          later through TestFlight.
         </p>
         <div class="cta-row reveal" style="margin-top:22px">
           <a href="demo/index.html" class="btn btn-ghost">Explore every screen in the UI demo</a>
+          <a href="https://github.com/cosyncing/cosyncing/releases/latest" class="btn btn-ghost">Download a client</a>
         </div>
       </div>
       <div class="compare reveal">
@@ -479,6 +484,29 @@
                alt="cosyncing phone client: sessions grouped by project with live status" />
           <img class="dark-only" src="assets/shots/demo/real/dark/sessions.png"
                alt="cosyncing phone client: sessions grouped by project with live status" />
+        </div>
+      </div>
+      <div class="plat" style="margin-top:44px">
+        <div class="panel reveal">
+          <span class="lbl">Broker runs on</span>
+          <div class="pill-row">
+            <span class="pill">macOS · Apple Silicon</span>
+            <span class="pill">Windows via WSL</span>
+            <span class="pill">Linux · x64 &amp; arm64</span>
+          </div>
+          <p>On Windows, run the broker inside WSL — a supported Linux host.</p>
+        </div>
+        <div class="panel reveal">
+          <span class="lbl">Clients on six platforms</span>
+          <div class="pill-row">
+            <span class="pill">Android</span>
+            <span class="pill">iOS</span>
+            <span class="pill">Linux</span>
+            <span class="pill">macOS</span>
+            <span class="pill">Windows</span>
+            <span class="pill">Web</span>
+          </div>
+          <p>The web client ships with cosyncing and is served by your own broker at <span class="mono">/cosy/</span>.</p>
         </div>
       </div>
     </div>
@@ -626,39 +654,6 @@
         <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Finished runs</b> — long tasks ping you when they complete, not only when they wait.</span></li>
         <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>Multi-broker</b> — every paired broker reports into the same list.</span></li>
       </ul>
-    </div>
-  </section>
-
-  <!-- Platforms -->
-  <section id="platforms" class="block" style="padding-top:20px">
-    <div class="wrap">
-      <div class="sec-head center">
-        <span class="kicker reveal">Platform support</span>
-        <h2 class="h2 reveal">Server on your workstation, clients everywhere</h2>
-      </div>
-      <div class="plat">
-        <div class="panel reveal">
-          <span class="lbl">Broker runs on</span>
-          <div class="pill-row">
-            <span class="pill">macOS · Apple Silicon</span>
-            <span class="pill">Windows via WSL</span>
-            <span class="pill">Linux · x64 &amp; arm64</span>
-          </div>
-          <p>On Windows, run the broker inside WSL — a supported Linux host.</p>
-        </div>
-        <div class="panel reveal">
-          <span class="lbl">Clients on six platforms</span>
-          <div class="pill-row">
-            <span class="pill">Android</span>
-            <span class="pill">iOS</span>
-            <span class="pill">Linux</span>
-            <span class="pill">macOS</span>
-            <span class="pill">Windows</span>
-            <span class="pill">Web</span>
-          </div>
-          <p>The web client ships with cosyncing 0.1.0 and is served by your own broker at <span class="mono">/cosy/</span>.</p>
-        </div>
-      </div>
     </div>
   </section>
 

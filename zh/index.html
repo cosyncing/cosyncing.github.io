@@ -377,8 +377,8 @@
       <a href="#features" class="nav-link">功能</a>
       <a href="#how" class="nav-link">工作原理</a>
       <a href="#privacy" class="nav-link">隐私</a>
-      <a href="#platforms" class="nav-link">平台</a>
-      <a href="demo/index.html" class="nav-link keep">演示</a>
+      <a href="#clients" class="nav-link">客户端</a>
+      <a href="../demo/index.html" class="nav-link keep">演示</a>
       <a href="#install" class="nav-link keep">安装</a>
       <a href="../index.html" class="nav-link keep" lang="en" hreflang="en">EN</a>
       <button class="icon-btn" id="theme-toggle" aria-label="切换深色模式">
@@ -423,10 +423,11 @@
   <section id="install" class="block" style="padding-top:20px; text-align:center">
     <div class="wrap">
       <span class="kicker reveal">安装</span>
-      <h2 class="h2 reveal">安装 cosyncing 0.1.0</h2>
+      <h2 class="h2 reveal">安装 cosyncing</h2>
       <p class="lead reveal" style="max-width:600px; margin:0 auto">
-        首个受支持的 npm 发行版现已发布。请先安装 Bun 1.3.8 或更高版本；
-        cosyncing 的 npm 包不内置 Bun 运行时。
+        请在服务器与客户端设备上安装 Tailscale。服务器需要 Bun 1.3.8 或更高版本来运行 cosyncing，
+        并需要 Node.js/npm 来安装和更新。强烈建议安装
+        <a href="https://github.com/JingbiaoMei/tokdash">Tokdash</a>，用于配额跟踪与预警。
       </p>
       <div class="terminal reveal">
         <div class="chrome">
@@ -434,13 +435,15 @@
           <span class="dot" style="background:#F59E0B"></span>
           <span class="dot" style="background:#14B8A6"></span>
         </div>
-<pre><span class="c"># 需要 Bun 1.3.8 或更高版本</span>
+<pre><span class="c"># 已登录 Tailscale；已安装 Bun 1.3.8+ 与 Node.js/npm</span>
 <span class="p">$</span> npm install --global cosyncing
 <span class="p">$</span> cosyncing setup
-<span class="p">$</span> cosyncing pair</pre>
+<span class="c"># setup 完成后，cosy 是 cosyncing 的简写</span>
+<span class="p">$</span> cosy pair</pre>
       </div>
       <div class="cta-row reveal" style="margin-top:34px">
-        <a href="demo/index.html" class="btn btn-primary">打开 UI 演示</a>
+        <a href="../demo/index.html" class="btn btn-primary">打开 UI 演示</a>
+        <a href="https://github.com/cosyncing/cosyncing/blob/main/docs/installation/prerequisites.md" class="btn btn-ghost">查看前置要求</a>
         <a href="https://github.com/cosyncing/cosyncing" class="btn btn-ghost">在 GitHub 上 Star</a>
       </div>
     </div>
@@ -450,14 +453,15 @@
   <section id="clients" class="block" style="padding-top:26px">
     <div class="wrap">
       <div class="sec-head center">
-        <span class="kicker reveal">One client, every screen</span>
+        <span class="kicker reveal">客户端</span>
         <h2 class="h2 reveal">桌面端在桌上，手机端在兜里</h2>
         <p class="lead reveal">
           同样的会话、同样的收件箱、同样的接管。源码与 CI 覆盖<b>六个客户端目标：Android、iOS、Linux、macOS、Windows 和网页</b>。
-          各平台发行包仍在准备中。
+          Android 与桌面客户端可从 GitHub Releases 下载；iOS 客户端将在后续通过 TestFlight 发布。
         </p>
         <div class="cta-row reveal" style="margin-top:22px">
-          <a href="demo/index.html" class="btn btn-ghost">在 UI 演示中查看每个界面</a>
+          <a href="../demo/index.html" class="btn btn-ghost">在 UI 演示中查看每个界面</a>
+          <a href="https://github.com/cosyncing/cosyncing/releases/latest" class="btn btn-ghost">下载客户端</a>
         </div>
       </div>
       <div class="compare reveal">
@@ -477,6 +481,29 @@
                alt="cosyncing 手机客户端：会话按项目归组，附实时状态" />
           <img class="dark-only" src="../assets/shots/demo/real/dark/sessions.png"
                alt="cosyncing 手机客户端：会话按项目归组，附实时状态" />
+        </div>
+      </div>
+      <div class="plat" style="margin-top:44px">
+        <div class="panel reveal">
+          <span class="lbl">Broker 运行于</span>
+          <div class="pill-row">
+            <span class="pill">macOS · Apple 芯片</span>
+            <span class="pill">Windows（经 WSL）</span>
+            <span class="pill">Linux · x64 与 arm64</span>
+          </div>
+          <p>在 Windows 上，请在 WSL 内运行 Broker —— WSL 是受支持的 Linux 宿主机。</p>
+        </div>
+        <div class="panel reveal">
+          <span class="lbl">客户端覆盖六个平台</span>
+          <div class="pill-row">
+            <span class="pill">Android</span>
+            <span class="pill">iOS</span>
+            <span class="pill">Linux</span>
+            <span class="pill">macOS</span>
+            <span class="pill">Windows</span>
+            <span class="pill">Web</span>
+          </div>
+          <p>网页客户端随 cosyncing 一同发布，由你自己的 Broker 在 <span class="mono">/cosy/</span> 提供。</p>
         </div>
       </div>
     </div>
@@ -625,39 +652,6 @@
     </div>
   </section>
 
-  <!-- Platforms -->
-  <section id="platforms" class="block" style="padding-top:20px">
-    <div class="wrap">
-      <div class="sec-head center">
-        <span class="kicker reveal">Platform support</span>
-        <h2 class="h2 reveal">Broker 在你的工作站上，客户端无处不在</h2>
-      </div>
-      <div class="plat">
-        <div class="panel reveal">
-          <span class="lbl">Broker 运行于</span>
-          <div class="pill-row">
-            <span class="pill">macOS · Apple 芯片</span>
-            <span class="pill">Windows（经 WSL）</span>
-            <span class="pill">Linux · x64 与 arm64</span>
-          </div>
-          <p>在 Windows 上，请在 WSL 内运行 Broker —— WSL 是受支持的 Linux 宿主机。</p>
-        </div>
-        <div class="panel reveal">
-          <span class="lbl">客户端覆盖六个平台</span>
-          <div class="pill-row">
-            <span class="pill">Android</span>
-            <span class="pill">iOS</span>
-            <span class="pill">Linux</span>
-            <span class="pill">macOS</span>
-            <span class="pill">Windows</span>
-            <span class="pill">Web</span>
-          </div>
-          <p>网页客户端随 cosyncing 0.1.0 一同发布，由你自己的 Broker 在 <span class="mono">/cosy/</span> 提供。</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
 </main>
 
 <footer>
@@ -667,7 +661,7 @@
       <a href="https://github.com/cosyncing/cosyncing">GitHub</a>
       <a href="https://github.com/cosyncing/cosyncing/blob/main/docs/README.md">文档</a>
       <a href="https://github.com/cosyncing/cosyncing/blob/main/CONTRIBUTING.md">参与贡献</a>
-      <a href="demo/index.html">演示</a>
+      <a href="../demo/index.html">演示</a>
     </nav>
   </div>
 </footer>
