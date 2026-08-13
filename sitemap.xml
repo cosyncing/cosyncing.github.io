@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml">
+
+  <url>
+    <loc>https://cosyncing.com/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/" />
+  </url>
+
+  <url>
+    <loc>https://cosyncing.com/zh/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/" />
+  </url>
+
+  <url>
+    <loc>https://cosyncing.com/demo/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/demo/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/demo/" />
+  </url>
+
+  <url>
+    <loc>https://cosyncing.com/zh/demo/</loc>
+    <lastmod>2026-08-13</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/demo/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/demo/" />
+  </url>
+
+</urlset>
