@@ -379,7 +379,7 @@
       <a href="#privacy" class="nav-link">隐私</a>
       <a href="#clients" class="nav-link">客户端</a>
       <a href="../demo/index.html" class="nav-link keep">演示</a>
-      <a href="#install" class="nav-link keep">安装</a>
+      <a href="#download" class="nav-link keep">下载</a>
       <a href="../index.html" class="nav-link keep" lang="en" hreflang="en">EN</a>
       <button class="icon-btn" id="theme-toggle" aria-label="切换深色模式">
         <svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
@@ -420,10 +420,10 @@
   </section>
 
   <!-- Install -->
-  <section id="install" class="block" style="padding-top:20px; text-align:center">
+  <section id="download" class="block" style="padding-top:20px; text-align:center">
     <div class="wrap">
-      <span class="kicker reveal">安装</span>
-      <h2 class="h2 reveal">安装 cosyncing</h2>
+      <span class="kicker reveal">下载</span>
+      <h2 class="h2 reveal">安装服务端，下载客户端</h2>
       <p class="lead reveal" style="max-width:600px; margin:0 auto">
         请在服务器与客户端设备上安装 Tailscale。服务器需要 Bun 1.3.8 或更高版本来运行 cosyncing，
         并需要 Node.js/npm 来安装和更新。强烈建议安装
@@ -441,9 +441,14 @@
 <span class="c"># setup 完成后，cosy 是 cosyncing 的简写</span>
 <span class="p">$</span> cosy pair</pre>
       </div>
+      <p class="lead reveal" style="max-width:600px; margin:26px auto 0">
+        然后为每台要使用的设备下载客户端。Windows、macOS、Linux 与 Android
+        的构建版本发布在 GitHub Releases 上。
+      </p>
       <div class="cta-row reveal" style="margin-top:34px">
-        <a href="../demo/index.html" class="btn btn-primary">打开 UI 演示</a>
+        <a href="https://github.com/cosyncing/cosyncing/releases/latest" class="btn btn-primary">下载客户端</a>
         <a href="https://github.com/cosyncing/cosyncing/blob/main/docs/installation/prerequisites.md" class="btn btn-ghost">查看前置要求</a>
+        <a href="../demo/index.html" class="btn btn-ghost">打开 UI 演示</a>
         <a href="https://github.com/cosyncing/cosyncing" class="btn btn-ghost">在 GitHub 上 Star</a>
       </div>
     </div>
@@ -485,13 +490,13 @@
       </div>
       <div class="plat" style="margin-top:44px">
         <div class="panel reveal">
-          <span class="lbl">Broker 运行于</span>
+          <span class="lbl">服务端运行于</span>
           <div class="pill-row">
             <span class="pill">macOS · Apple 芯片</span>
             <span class="pill">Windows（经 WSL）</span>
             <span class="pill">Linux · x64 与 arm64</span>
           </div>
-          <p>在 Windows 上，请在 WSL 内运行 Broker —— WSL 是受支持的 Linux 宿主机。</p>
+          <p>在 Windows 上，请在 WSL 内运行服务端 —— WSL 是受支持的 Linux 宿主机。</p>
         </div>
         <div class="panel reveal">
           <span class="lbl">客户端覆盖六个平台</span>
@@ -503,7 +508,7 @@
             <span class="pill">Windows</span>
             <span class="pill">Web</span>
           </div>
-          <p>网页客户端随 cosyncing 一同发布，由你自己的 Broker 在 <span class="mono">/cosy/</span> 提供。</p>
+          <p>网页客户端随 cosyncing 一同发布，由你自己的服务端在 <span class="mono">/cosy/</span> 提供。</p>
         </div>
       </div>
     </div>
@@ -553,7 +558,7 @@
       <div class="sec-head center">
         <span class="kicker reveal">Features</span>
         <h2 class="h2 reveal">每个会话，触手可及</h2>
-        <p class="lead reveal">Broker 在智能体本就在运行的地方观察它们，并提供一个客户端来展示每个会话 —— 按项目归组，附带对话记录、diff、命令和提问。</p>
+        <p class="lead reveal">服务端在智能体本就在运行的地方观察它们，并提供一个客户端来展示每个会话 —— 按项目归组，附带对话记录、diff、命令和提问。</p>
       </div>
       <div class="bento">
         <div class="cell span2 reveal">
@@ -564,7 +569,7 @@
         <div class="cell reveal">
           <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
           <h3>通知收件箱</h3>
-          <p>权限请求、智能体提问和运行完成通知，汇聚在同一个跨多 Broker 的收件箱里。</p>
+          <p>权限请求、智能体提问和运行完成通知，汇聚在同一个跨多服务端的收件箱里。</p>
         </div>
         <div class="cell reveal">
           <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
@@ -595,7 +600,7 @@
       <div class="steps">
         <div class="step reveal">
           <span class="n">1</span>
-          <h3>运行 Broker</h3>
+          <h3>运行服务端</h3>
           <p><span class="mono">cosyncing setup</span> 会清楚展示它将改动的内容，然后要么整体应用、要么完全不动。</p>
         </div>
         <div class="step reveal">
@@ -619,7 +624,7 @@
         <span class="kicker">Privacy &amp; security</span>
         <h2 class="h2">你的机器。你的网络。你的数据。</h2>
         <p class="lead" style="max-width:620px">
-          Broker 状态留在运行它的那台机器上。会话内容只会通过你选择的网络发送给已认证的客户端。
+          服务端状态留在运行它的那台机器上。会话内容只会通过你选择的网络发送给已认证的客户端。
         </p>
         <div class="grid">
           <div class="item">
@@ -647,7 +652,7 @@
         <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>权限请求</b>附带完整的命令上下文 —— 一次点按即可批准或驳回。</span></li>
         <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>智能体提问</b>期间会话保持连接，回答直接落在智能体等待的地方。</span></li>
         <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>运行完成</b> —— 长任务跑完时同样会通知你，而不只是等待你回应时。</span></li>
-        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>多 Broker</b> —— 每个已配对的 Broker 都汇报到同一个列表。</span></li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>多服务端</b> —— 每个已配对的服务端都汇报到同一个列表。</span></li>
       </ul>
     </div>
   </section>

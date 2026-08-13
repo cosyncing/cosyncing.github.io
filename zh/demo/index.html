@@ -227,7 +227,7 @@
     <h1 class="reveal">安装之前，先看看客户端</h1>
     <p class="lead reveal">
       下面每个界面都截取自运行中的 cosyncing 客户端 —— 会话、可接管的会话聊天，以及通知收件箱。
-      不是效果图：这些视图由真实运行的 Broker 提供，脚本化数据让会话保持确定性。
+      不是效果图：这些视图由真实运行的服务端提供，脚本化数据让会话保持确定性。
     </p>
     <span class="theme-hint reveal">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
@@ -277,9 +277,9 @@
         <span class="no">2</span>
         <h2>网页</h2>
         <p>
-          同一个客户端，由你自己的 Broker 在 <span class="mono">/cosy/</span> 提供。
+          同一个客户端，由你自己的服务端在 <span class="mono">/cosy/</span> 提供。
           Flutter 网页构建随 npm 包一同分发 —— 运行时不从网络拉取任何内容，
-          也不涉及任何第三方主机。任何能连到 Broker 的浏览器都能打开。
+          也不涉及任何第三方主机。任何能连到服务端的浏览器都能打开。
         </p>
       </div>
       <div class="win reveal">
@@ -290,7 +290,7 @@
           <span class="url">http://192.168.1.10:7734/cosy/</span>
         </div>
         <img src="../../assets/shots/demo/real/dark/workspace.png" data-shot="workspace"
-             alt="浏览器中的 cosyncing 网页客户端：同样的宽屏会话布局，由 Broker 在 /cosy/ 提供" />
+             alt="浏览器中的 cosyncing 网页客户端：同样的宽屏会话布局，由服务端在 /cosy/ 提供" />
       </div>
     </div>
   </section>
@@ -309,7 +309,7 @@
       <div class="phone-grid">
         <div class="shot-card reveal">
           <div class="img-wrap"><img src="../../assets/shots/demo/real/dark/sessions.png" data-shot="sessions" alt="会话：全部会话按项目归组，附筛选和实时状态" /></div>
-          <div class="cap"><h3>会话</h3><p>所有 Broker 上的全部会话，按项目归组 —— 搜索、按状态或智能体筛选，一眼看清哪些在工作、哪些在等待。</p></div>
+          <div class="cap"><h3>会话</h3><p>所有服务端上的全部会话，按项目归组 —— 搜索、按状态或智能体筛选，一眼看清哪些在工作、哪些在等待。</p></div>
         </div>
         <div class="shot-card reveal">
           <div class="img-wrap"><img src="../../assets/shots/demo/real/dark/chat.png" data-shot="chat" alt="会话聊天：含工具调用的对话记录和一个输入框" /></div>
@@ -317,7 +317,7 @@
         </div>
         <div class="shot-card reveal">
           <div class="img-wrap"><img src="../../assets/shots/demo/real/dark/attention.png" data-shot="attention" alt="通知收件箱：权限请求和提问汇聚在一个列表中" /></div>
-          <div class="cap"><h3>通知</h3><p>权限请求、智能体提问和 Broker 维护事项 —— 一个跨多 Broker 的收件箱。</p></div>
+          <div class="cap"><h3>通知</h3><p>权限请求、智能体提问和服务端维护事项 —— 一个跨多服务端的收件箱。</p></div>
         </div>
       </div>
     </div>

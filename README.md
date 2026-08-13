@@ -23,7 +23,7 @@ Official project site for [cosyncing](https://github.com/cosyncing/cosyncing) â€
 ## Screenshots and video
 
 The demo uses reviewed captures from the real app running against a
-deterministic fixture broker with fictitious sessions and attention events.
+deterministic fixture server with fictitious sessions and attention events.
 Capture tooling and fixture data are maintained outside this published site;
 the public demo contains only the resulting product captures.
 
