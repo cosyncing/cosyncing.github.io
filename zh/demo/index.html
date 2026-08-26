@@ -451,7 +451,7 @@
     }
     btn.addEventListener('click', function (e) {
       e.stopPropagation();
-      if (pop.hidden) openMenu(); else closeMenu(false);
+      if (pop.hidden) openMenu(0); else closeMenu(false);
     });
     btn.addEventListener('keydown', function (e) {
       if (e.key === 'ArrowDown') { e.preventDefault(); openMenu(0); }
