@@ -16,8 +16,13 @@
 
 <title>cosyncing —— 客户端 UI 演示</title>
 <meta name="description" content="截取自运行中的 cosyncing 客户端：桌面、网页和手机界面，深色与浅色 —— 会话、可接管的会话聊天，以及通知收件箱。" />
-<link rel="alternate" hreflang="en" href="../../demo/index.html" />
-<link rel="alternate" hreflang="zh-CN" href="index.html" />
+<link rel="canonical" href="https://cosyncing.com/zh/demo/" />
+<link rel="alternate" hreflang="en" href="https://cosyncing.com/demo/" />
+<link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/demo/" />
+<link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/demo/" />
+<link rel="alternate" hreflang="ko" href="https://cosyncing.com/ko/demo/" />
+<link rel="alternate" hreflang="es" href="https://cosyncing.com/es/demo/" />
+<link rel="alternate" hreflang="x-default" href="https://cosyncing.com/demo/" />
 
 <link rel="icon" type="image/svg+xml" href="../../assets/icons/favicon.svg" />
 <link rel="icon" type="image/x-icon" href="../../assets/icons/favicon.ico" sizes="any" />
@@ -195,6 +200,75 @@
     html.js .reveal { opacity: 1; transform: none; transition: none; }
     html { scroll-behavior: auto; }
   }
+
+  /* ---- Language menu ---- */
+  .lang-menu { position: relative; display: inline-flex; }
+  .lang-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font: inherit; font-size: 0.9rem; font-weight: 600;
+    color: var(--text2); background: transparent; border: 0; cursor: pointer;
+    padding: 7px 10px; border-radius: 999px;
+    transition: color 180ms ease, background 180ms ease;
+  }
+  .lang-btn:hover { color: var(--text); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .lang-btn svg { width: 16px; height: 16px; flex: none; }
+  .lang-pop {
+    position: absolute; top: calc(100% + 10px); right: 0; z-index: 60;
+    min-width: 150px; padding: 6px;
+    background: var(--surface); border: 1px solid var(--separator);
+    border-radius: 14px; box-shadow: var(--shadow-lg);
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .lang-pop[hidden] { display: none; }
+  .lang-pop a {
+    text-decoration: none; color: var(--text2);
+    font-size: 0.9rem; font-weight: 600; white-space: nowrap;
+    padding: 8px 12px; border-radius: 9px;
+    transition: color 180ms ease, background 180ms ease;
+  }
+  .lang-pop a:hover { color: var(--text); background: var(--surface2); }
+  .lang-pop a[aria-current] { color: var(--accent); }
+  @media (max-width: 560px) { .lang-btn { padding: 6px 7px; font-size: 0.86rem; } }
+
+  /* i18n-nav:start */
+  /* ---- Language menu ---- */
+  .lang-menu { position: relative; display: inline-flex; }
+  .lang-btn {
+    display: inline-flex; align-items: center; gap: 6px;
+    font: inherit; font-size: 0.9rem; font-weight: 600;
+    color: var(--text2); background: transparent; border: 0; cursor: pointer;
+    padding: 7px 10px; border-radius: 999px;
+    transition: color 180ms ease, background 180ms ease;
+  }
+  .lang-btn:hover { color: var(--text); background: color-mix(in srgb, var(--accent) 10%, transparent); }
+  .lang-btn svg { width: 16px; height: 16px; flex: none; }
+  .lang-pop {
+    position: absolute; top: calc(100% + 10px); right: 0; z-index: 60;
+    min-width: 150px; padding: 6px;
+    background: var(--surface); border: 1px solid var(--separator);
+    border-radius: 14px; box-shadow: var(--shadow-lg);
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .lang-pop[hidden] { display: none; }
+  .lang-pop a {
+    text-decoration: none; color: var(--text2);
+    font-size: 0.9rem; font-weight: 600; white-space: nowrap;
+    padding: 8px 12px; border-radius: 9px;
+    transition: color 180ms ease, background 180ms ease;
+  }
+  .lang-pop a:hover { color: var(--text); background: var(--surface2); }
+  .lang-pop a[aria-current] { color: var(--accent); }
+  @media (max-width: 560px) { .lang-btn { padding: 6px 7px; font-size: 0.86rem; } }
+
+  /* Japanese and Korean headlines: `ch` measures the digit zero, so a
+     max-width tuned for English clips full-width text to about half the
+     intended line and breaks mid-word. */
+  html[lang="ja"] .hero h1, html[lang="ko"] .hero h1 {
+    max-width: 13em; letter-spacing: -0.01em;
+  }
+  html[lang="ja"] .hero h1 { font-size: clamp(1.8rem, 5.4vw, 3.9rem); }
+  html[lang="ja"] .hero .tag, html[lang="ko"] .hero .tag { max-width: 34em; }
+  /* i18n-nav:end */
 </style>
 </head>
 <body>
@@ -211,7 +285,19 @@
       <a href="#web" class="nav-link">网页</a>
       <a href="#phone" class="nav-link">手机</a>
       <a href="../index.html" class="nav-link">&larr; 首页</a>
-      <a href="../../demo/index.html" class="nav-link keep" lang="en" hreflang="en">EN</a>
+      <div class="lang-menu">
+        <button type="button" class="lang-btn" id="lang-btn"
+                aria-haspopup="true" aria-expanded="false" aria-label="选择语言">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg><span>中文</span>
+        </button>
+        <div class="lang-pop" id="lang-pop" role="menu" hidden>
+        <a role="menuitem" href="../../demo/index.html" lang="en" hreflang="en">English</a>
+        <a role="menuitem" href="../../zh/demo/index.html" lang="zh-CN" hreflang="zh-CN" aria-current="true">简体中文</a>
+        <a role="menuitem" href="../../ja/demo/index.html" lang="ja" hreflang="ja">日本語</a>
+        <a role="menuitem" href="../../ko/demo/index.html" lang="ko" hreflang="ko">한국어</a>
+        <a role="menuitem" href="../../es/demo/index.html" lang="es" hreflang="es">Español</a>
+        </div>
+      </div>
       <button class="icon-btn" id="theme-toggle" aria-label="切换深色模式">
         <svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         <svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
@@ -363,6 +449,24 @@
       });
     }, { threshold: 0.12 });
     els.forEach(function (el) { io.observe(el); });
+  })();
+  (function () {
+    var btn = document.getElementById('lang-btn');
+    var pop = document.getElementById('lang-pop');
+    if (!btn || !pop) return;
+    function close() { pop.hidden = true; btn.setAttribute('aria-expanded', 'false'); }
+    btn.addEventListener('click', function (e) {
+      e.stopPropagation();
+      var opening = pop.hidden;
+      pop.hidden = !opening;
+      btn.setAttribute('aria-expanded', opening ? 'true' : 'false');
+    });
+    document.addEventListener('click', function (e) {
+      if (!pop.hidden && !pop.contains(e.target)) close();
+    });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape') close();
+    });
   })();
 </script>
 

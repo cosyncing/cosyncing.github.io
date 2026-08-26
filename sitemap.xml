@@ -4,38 +4,132 @@
 
   <url>
     <loc>https://cosyncing.com/</loc>
-    <lastmod>2026-08-13</lastmod>
+    <lastmod>2026-08-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cosyncing.com/ko/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://cosyncing.com/es/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cosyncing.com/" />
   </url>
 
   <url>
     <loc>https://cosyncing.com/zh/</loc>
-    <lastmod>2026-08-13</lastmod>
+    <lastmod>2026-08-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cosyncing.com/ko/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://cosyncing.com/es/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cosyncing.com/" />
+  </url>
+
+  <url>
+    <loc>https://cosyncing.com/ja/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cosyncing.com/ko/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://cosyncing.com/es/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cosyncing.com/" />
+  </url>
+
+  <url>
+    <loc>https://cosyncing.com/ko/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cosyncing.com/ko/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://cosyncing.com/es/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cosyncing.com/" />
+  </url>
+
+  <url>
+    <loc>https://cosyncing.com/es/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cosyncing.com/ko/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://cosyncing.com/es/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cosyncing.com/" />
   </url>
 
   <url>
     <loc>https://cosyncing.com/demo/</loc>
-    <lastmod>2026-08-13</lastmod>
+    <lastmod>2026-08-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/demo/" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/demo/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/demo/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cosyncing.com/ko/demo/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://cosyncing.com/es/demo/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cosyncing.com/demo/" />
   </url>
 
   <url>
     <loc>https://cosyncing.com/zh/demo/</loc>
-    <lastmod>2026-08-13</lastmod>
+    <lastmod>2026-08-26</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
     <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/demo/" />
     <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/demo/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/demo/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cosyncing.com/ko/demo/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://cosyncing.com/es/demo/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cosyncing.com/demo/" />
+  </url>
+
+  <url>
+    <loc>https://cosyncing.com/ja/demo/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/demo/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/demo/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/demo/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cosyncing.com/ko/demo/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://cosyncing.com/es/demo/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cosyncing.com/demo/" />
+  </url>
+
+  <url>
+    <loc>https://cosyncing.com/ko/demo/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/demo/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/demo/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/demo/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cosyncing.com/ko/demo/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://cosyncing.com/es/demo/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cosyncing.com/demo/" />
+  </url>
+
+  <url>
+    <loc>https://cosyncing.com/es/demo/</loc>
+    <lastmod>2026-08-26</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+    <xhtml:link rel="alternate" hreflang="en" href="https://cosyncing.com/demo/" />
+    <xhtml:link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/demo/" />
+    <xhtml:link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/demo/" />
+    <xhtml:link rel="alternate" hreflang="ko" href="https://cosyncing.com/ko/demo/" />
+    <xhtml:link rel="alternate" hreflang="es" href="https://cosyncing.com/es/demo/" />
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://cosyncing.com/demo/" />
   </url>
 
 </urlset>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN">
+<html lang="ja">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,9 +14,9 @@
   gtag('config', 'G-KCR40P3JG6');
 </script>
 
-<title>cosyncing —— 代码随处。同步无界。</title>
-<meta name="description" content="代码随处，同步无界。让 Claude Code、Codex、OpenCode 与 Pi 会话通过你自己的网络保持同步。自托管、无需账号、不含分析遥测。" />
-<link rel="canonical" href="https://cosyncing.com/zh/" />
+<title>cosyncing — どこでもコーディング。どこでも同期。</title>
+<meta name="description" content="どこでもコーディング。どこでも同期。Claude Code、Codex、OpenCode、Pi のセッションを、自分のネットワークの中で同期させ続けます。セルフホスト、アカウント不要、分析テレメトリーなし。" />
+<link rel="canonical" href="https://cosyncing.com/ja/" />
 <link rel="alternate" hreflang="en" href="https://cosyncing.com/" />
 <link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/" />
 <link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/" />
@@ -24,9 +24,9 @@
 <link rel="alternate" hreflang="es" href="https://cosyncing.com/es/" />
 <link rel="alternate" hreflang="x-default" href="https://cosyncing.com/" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="cosyncing —— 代码随处。同步无界。" />
-<meta property="og:description" content="让编码智能体从 CLI 到 GUI、从桌面到手机，通过你自己的网络保持同步。" />
-<meta property="og:url" content="https://cosyncing.com/zh/" />
+<meta property="og:title" content="cosyncing — どこでもコーディング。どこでも同期。" />
+<meta property="og:description" content="コーディングエージェントを、CLI から GUI へ、デスクトップから携帯へ、自分のネットワークの中で同期させ続けます。" />
+<meta property="og:url" content="https://cosyncing.com/ja/" />
 <meta property="og:image" content="https://cosyncing.com/assets/brand/og-image.png" />
 <meta name="twitter:card" content="summary_large_image" />
 
@@ -86,7 +86,7 @@
   html { scroll-behavior: smooth; scroll-padding-top: 84px; }
   body {
     margin: 0;
-    font-family: "Fira Sans", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", ui-sans-serif, system-ui, sans-serif;
+    font-family: "Fira Sans", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
     background: var(--canvas);
     color: var(--text);
     -webkit-font-smoothing: antialiased;
@@ -140,7 +140,7 @@
     .site-nav .gh-star .gh-count { display: none; }
     .site-nav .gh-star .gh-mark { display: block; }
   }
-  /* Small phones: keep the bar within the viewport at the narrowest common widths. */
+  /* Small phones: English labels are wider than the Chinese ones and need more room. */
   @media (max-width: 400px) {
     .site-nav .bar { gap: 4px; padding: 8px 8px 8px 10px; }
     .site-nav .brand { font-size: 0.9rem; gap: 6px; }
@@ -465,34 +465,34 @@
 
 <header class="site-nav">
   <div class="bar">
-    <a class="brand" href="#top" aria-label="cosyncing 首页">
+    <a class="brand" href="#top" aria-label="cosyncing ホーム">
       <img class="light-only" src="../assets/brand/cosyncing-mark-two-tone-light.svg" alt="" />
       <img class="dark-only" src="../assets/brand/cosyncing-mark-two-tone-dark.svg" alt="" />
       <span>cosyncing</span>
     </a>
-    <nav class="nav-links" aria-label="主导航">
-      <a href="#download" class="nav-link keep">下载</a>
-      <a href="#clients" class="nav-link">客户端</a>
-      <a href="#how" class="nav-link">工作原理</a>
-      <a href="demo/index.html" class="nav-link keep">演示</a>
+    <nav class="nav-links" aria-label="メイン">
+      <a href="#download" class="nav-link keep">ダウンロード</a>
+      <a href="#clients" class="nav-link">クライアント</a>
+      <a href="#how" class="nav-link">仕組み</a>
+      <a href="demo/index.html" class="nav-link keep">デモ</a>
       <div class="lang-menu">
         <button type="button" class="lang-btn" id="lang-btn"
-                aria-haspopup="true" aria-expanded="false" aria-label="选择语言">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg><span>中文</span>
+                aria-haspopup="true" aria-expanded="false" aria-label="言語を選択">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg><span>JA</span>
         </button>
         <div class="lang-pop" id="lang-pop" role="menu" hidden>
         <a role="menuitem" href="../index.html" lang="en" hreflang="en">English</a>
-        <a role="menuitem" href="../zh/index.html" lang="zh-CN" hreflang="zh-CN" aria-current="true">简体中文</a>
-        <a role="menuitem" href="../ja/index.html" lang="ja" hreflang="ja">日本語</a>
+        <a role="menuitem" href="../zh/index.html" lang="zh-CN" hreflang="zh-CN">简体中文</a>
+        <a role="menuitem" href="../ja/index.html" lang="ja" hreflang="ja" aria-current="true">日本語</a>
         <a role="menuitem" href="../ko/index.html" lang="ko" hreflang="ko">한국어</a>
         <a role="menuitem" href="../es/index.html" lang="es" hreflang="es">Español</a>
         </div>
       </div>
-      <button class="icon-btn" id="theme-toggle" aria-label="切换深色模式">
+      <button class="icon-btn" id="theme-toggle" aria-label="ダークモードを切り替え">
         <svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         <svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
       </button>
-      <a class="gh-star" href="https://github.com/cosyncing/cosyncing" aria-label="在 GitHub 上 Star cosyncing">
+      <a class="gh-star" href="https://github.com/cosyncing/cosyncing" aria-label="GitHub で cosyncing にスターを付ける">
         <svg class="gh-glyph" width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.94 6.36 6.96.8-5.16 4.73 1.4 6.85L12 17.27 5.86 20.74l1.4-6.85L2.1 9.16l6.96-.8L12 2z"/></svg>
         <svg class="gh-mark" width="18" height="18" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27s1.36.09 2 .27c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/></svg>
         <span class="gh-text">Star</span><span class="gh-count">&mdash;</span>
@@ -506,11 +506,12 @@
   <!-- Hero -->
   <section class="hero">
     <div class="wrap">
-      <span class="chip reveal">开源 · 自托管 · Apache-2.0</span>
-      <h1 class="reveal">代码随处。<br /><em>同步无界。</em></h1>
-      <p class="tag reveal">同步你的智能体 —— 从 CLI 到 GUI，从桌面到手机。</p>
+      <span class="chip reveal">オープンソース · セルフホスト · Apache-2.0</span>
+      <h1 class="reveal">どこでもコーディング。<br /><em>どこでも同期。</em></h1>
+      <p class="tag reveal">エージェントを同期する。CLI から GUI へ、デスクトップから携帯へ。</p>
       <p class="tag reveal" style="font-weight:400; font-size:clamp(0.95rem, 1.6vw, 1.08rem)">
-        从任何地方接着上次的进度继续。cosyncing 让你的编码智能体在你自己的网络里保持同步。
+        どこにいても、中断したところから再開できます。cosyncing は自分のネットワークの中で
+        コーディングエージェントを同期させ続けます。
       </p>
     </div>
   </section>
@@ -519,10 +520,10 @@
   <section class="block" style="padding-top:34px; padding-bottom:20px">
     <div class="wrap">
       <div class="banner reveal">
-        <img class="light-only" src="../assets/brand/banner/social-banner-light-zh-2400x1260.png"
-             alt="cosyncing —— 代码随处。同步无界。智能体照常运转，你持续前行。" />
-        <img class="dark-only" src="../assets/brand/banner/social-banner-zh-2400x1260.png"
-             alt="cosyncing —— 代码随处。同步无界。智能体照常运转，你持续前行。" />
+        <img class="light-only" src="../assets/brand/banner/social-banner-light-ja-2400x1260.png"
+             alt="cosyncing — どこでもコーディング。どこでも同期。エージェントは動き続け、あなたも止まらない。" />
+        <img class="dark-only" src="../assets/brand/banner/social-banner-ja-2400x1260.png"
+             alt="cosyncing — どこでもコーディング。どこでも同期。エージェントは動き続け、あなたも止まらない。" />
       </div>
     </div>
   </section>
@@ -530,11 +531,12 @@
   <!-- Install -->
   <section id="download" class="block" style="padding-top:20px; text-align:center">
     <div class="wrap">
-      <span class="kicker reveal">下载</span>
-      <h2 class="h2 reveal">安装服务端，下载客户端</h2>
+      <span class="kicker reveal">ダウンロード</span>
+      <h2 class="h2 reveal">サーバーを入れて、クライアントを入手</h2>
       <p class="lead reveal" style="max-width:600px; margin:0 auto">
-        前置要求：每台设备都需要 Tailscale；服务端还需要 Bun 1.3.8+ 与 npm。强烈建议配合
-        <a href="https://github.com/JingbiaoMei/tokdash">Tokdash</a> 做配额跟踪。详见<a href="https://github.com/cosyncing/cosyncing/blob/main/docs/installation/prerequisites.md">完整前置要求</a>。
+        前提条件: すべての端末に Tailscale、サーバーに Bun 1.3.8 以降と npm。使用量の把握には
+        <a href="https://github.com/JingbiaoMei/tokdash">Tokdash</a> を強くおすすめします。
+        詳しくは<a href="https://github.com/cosyncing/cosyncing/blob/main/docs/installation/prerequisites.md">前提条件の一覧</a>をご覧ください。
       </p>
       <div class="terminal reveal">
         <div class="chrome">
@@ -542,19 +544,19 @@
           <span class="dot" style="background:#F59E0B"></span>
           <span class="dot" style="background:#14B8A6"></span>
         </div>
-<pre><span class="c"># 已登录 Tailscale；已安装 Bun 1.3.8+ 与 Node.js/npm</span>
+<pre><span class="c"># Tailscale にサインイン済み、Bun 1.3.8 以降と Node.js/npm を導入済み</span>
 <span class="p">$</span> npm install --global cosyncing
 <span class="p">$</span> cosyncing setup
-<span class="c"># setup 完成后，cosy 是 cosyncing 的简写</span>
+<span class="c"># セットアップ後は cosy が cosyncing の短縮形</span>
 <span class="p">$</span> cosy pair</pre>
       </div>
       <p class="lead reveal" style="max-width:600px; margin:26px auto 0">
-        然后为每台要使用的设备下载客户端。Windows、macOS、Linux 与 Android
-        的构建版本发布在 GitHub Releases 上。
+        あとは使いたい端末ごとにクライアントを入手するだけです。Windows、macOS、Linux、Android の
+        ビルドは GitHub Releases で公開しています。
       </p>
       <div class="cta-row reveal" style="margin-top:34px">
-        <a href="https://github.com/cosyncing/cosyncing/releases/latest" class="btn btn-primary">下载客户端</a>
-        <a href="demo/index.html" class="btn btn-ghost">打开 UI 演示</a>
+        <a href="https://github.com/cosyncing/cosyncing/releases/latest" class="btn btn-primary">クライアントを入手</a>
+        <a href="demo/index.html" class="btn btn-ghost">UI デモを開く</a>
       </div>
     </div>
   </section>
@@ -563,15 +565,17 @@
   <section id="clients" class="block" style="padding-top:26px">
     <div class="wrap">
       <div class="sec-head center">
-        <span class="kicker reveal">客户端</span>
-        <h2 class="h2 reveal">桌面端在桌上，手机端在兜里</h2>
+        <span class="kicker reveal">クライアント</span>
+        <h2 class="h2 reveal">机ではデスクトップ、外では手のなかの携帯</h2>
         <p class="lead reveal">
-          同样的会话、同样的收件箱、同样的接管。源码与 CI 覆盖<b>六个客户端目标：Android、iOS、Linux、macOS、Windows 和网页</b>。
-          Android 与桌面客户端可从 GitHub Releases 下载；iOS 客户端将在后续通过 TestFlight 发布。
+          同じセッション、同じ受信箱、同じ引き継ぎ。ソースツリーと CI は
+          <b>Android、iOS、Linux、macOS、Windows、Web の 6 つのクライアント</b>を対象にしています。
+          Android とデスクトップのビルド済みクライアントは GitHub Releases から入手できます。iOS は
+          後日 TestFlight で提供予定です。
         </p>
         <div class="cta-row reveal" style="margin-top:22px">
-          <a href="demo/index.html" class="btn btn-ghost">在 UI 演示中查看每个界面</a>
-          <a href="https://github.com/cosyncing/cosyncing/releases/latest" class="btn btn-ghost">下载客户端</a>
+          <a href="demo/index.html" class="btn btn-ghost">UI デモですべての画面を見る</a>
+          <a href="https://github.com/cosyncing/cosyncing/releases/latest" class="btn btn-ghost">クライアントを入手</a>
         </div>
       </div>
       <div class="compare reveal">
@@ -582,29 +586,29 @@
             <span class="dot" style="background:#14B8A6"></span>
           </div>
           <img class="light-only" src="../assets/shots/demo/real/light/workspace.png"
-               alt="cosyncing 桌面与网页客户端：会话列表旁边是进行中的会话聊天" />
+               alt="cosyncing のデスクトップ／Web クライアント。セッション一覧の横にライブのセッションチャット" />
           <img class="dark-only" src="../assets/shots/demo/real/dark/workspace.png"
-               alt="cosyncing 桌面与网页客户端：会话列表旁边是进行中的会话聊天" />
+               alt="cosyncing のデスクトップ／Web クライアント。セッション一覧の横にライブのセッションチャット" />
         </div>
         <div class="win compare-phone">
           <img class="light-only" src="../assets/shots/demo/real/light/sessions.png"
-               alt="cosyncing 手机客户端：会话按项目归组，附实时状态" />
+               alt="cosyncing の携帯クライアント。プロジェクトごとにまとまったセッションと、ライブの状態表示" />
           <img class="dark-only" src="../assets/shots/demo/real/dark/sessions.png"
-               alt="cosyncing 手机客户端：会话按项目归组，附实时状态" />
+               alt="cosyncing の携帯クライアント。プロジェクトごとにまとまったセッションと、ライブの状態表示" />
         </div>
       </div>
       <div class="plat" style="margin-top:44px">
         <div class="panel reveal">
-          <span class="lbl">服务端运行于</span>
+          <span class="lbl">サーバーの動作環境</span>
           <div class="pill-row">
-            <span class="pill">macOS · Apple 芯片</span>
-            <span class="pill">Windows（经 WSL）</span>
-            <span class="pill">Linux · x64 与 arm64</span>
+            <span class="pill">macOS · Apple Silicon</span>
+            <span class="pill">Windows は WSL 経由</span>
+            <span class="pill">Linux · x64 &amp; arm64</span>
           </div>
-          <p>在 Windows 上，请在 WSL 内运行服务端 —— WSL 是受支持的 Linux 宿主机。</p>
+          <p>Windows では WSL の中でサーバーを動かしてください。対応済みの Linux ホストです。</p>
         </div>
         <div class="panel reveal">
-          <span class="lbl">客户端覆盖六个平台</span>
+          <span class="lbl">6 つのプラットフォームのクライアント</span>
           <div class="pill-row">
             <span class="pill">Android</span>
             <span class="pill">iOS</span>
@@ -613,7 +617,7 @@
             <span class="pill">Windows</span>
             <span class="pill">Web</span>
           </div>
-          <p>网页客户端随 cosyncing 一同发布，由你自己的服务端在 <span class="mono">/cosy/</span> 提供。</p>
+          <p>Web クライアントは cosyncing に同梱され、あなた自身のサーバーが <span class="mono">/cosy/</span> で配信します。</p>
         </div>
       </div>
     </div>
@@ -623,23 +627,24 @@
   <section id="sync" class="block" style="padding-top:10px">
     <div class="wrap">
       <div class="sec-head center">
-        <span class="kicker reveal">In sync, always</span>
-        <h2 class="h2 reveal">智能体照常运转，每个屏幕同步跟进。</h2>
+        <span class="kicker reveal">いつでも同期</span>
+        <h2 class="h2 reveal">エージェントは動き続け、どの画面もそれに追いつく。</h2>
         <p class="lead reveal">
-          智能体写出的每一行，都会即时落到应用里。从任何设备发送提示词 —— 终端和应用始终一致。
+          エージェントが書いた瞬間に、一行ずつアプリへ届きます。どの端末からプロンプトを送っても、
+          ターミナルとアプリの内容が食い違うことはありません。
         </p>
       </div>
       <div class="win reveal sync-video">
         <video class="light-only" autoplay muted loop playsinline preload="metadata">
           <source src="../assets/sync/sync-demo-light.mp4" type="video/mp4" />
-          <img src="../assets/sync/sync-demo-light.gif" alt="同一桌面上的两个窗口：cosyncing 应用和 Codex 终端。从应用发送提示词时，两边保持同步" />
+          <img src="../assets/sync/sync-demo-light.gif" alt="1 つのデスクトップに並ぶ cosyncing アプリと codex のターミナル。アプリからプロンプトを送っても同期が保たれている様子" />
         </video>
         <video class="dark-only" autoplay muted loop playsinline preload="metadata">
           <source src="../assets/sync/sync-demo-dark.mp4" type="video/mp4" />
-          <img src="../assets/sync/sync-demo-dark.gif" alt="同一桌面上的两个窗口：cosyncing 应用和 Codex 终端。从应用发送提示词时，两边保持同步" />
+          <img src="../assets/sync/sync-demo-dark.gif" alt="1 つのデスクトップに並ぶ cosyncing アプリと codex のターミナル。アプリからプロンプトを送っても同期が保たれている様子" />
         </video>
       </div>
-      <p class="video-caption reveal">cosyncing 应用 &nbsp;&#8696;&nbsp; 智能体 CLI —— 实时</p>
+      <p class="video-caption reveal">cosyncing アプリ &nbsp;&#8696;&nbsp; エージェント CLI — ライブ</p>
 
     </div>
   </section>
@@ -647,7 +652,7 @@
   <!-- Agent strip -->
   <div class="agents-strip">
     <div class="wrap">
-      <span class="lbl reveal">一套协议，六个智能体</span>
+      <span class="lbl reveal">1 つのプロトコル、6 つのエージェント</span>
       <div class="row reveal">
         <img src="../assets/agents/claude.png" alt="Claude Code" />
         <img src="../assets/agents/codex.png" alt="Codex" />
@@ -663,35 +668,35 @@
   <section id="features" class="block">
     <div class="wrap">
       <div class="sec-head center">
-        <span class="kicker reveal">Features</span>
-        <h2 class="h2 reveal">每个会话，触手可及</h2>
-        <p class="lead reveal">服务端在智能体本就在运行的地方观察它们，并提供一个客户端来展示每个会话 —— 按项目归组，附带对话记录、diff、命令和提问。</p>
+        <span class="kicker reveal">機能</span>
+        <h2 class="h2 reveal">すべてのセッションに、すぐ手が届く</h2>
+        <p class="lead reveal">サーバーは、エージェントがすでに動いている場所でそれらを監視し、各セッションを表示するクライアントを提供します。セッションはプロジェクトごとにまとまり、トランスクリプト、差分、コマンド、質問がそのまま見えます。</p>
       </div>
       <div class="bento">
         <div class="cell span2 reveal">
           <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
-          <h3>所有项目，一个空间</h3>
-          <p>做你自己所有智能体的总指挥 —— 工作中、待输入和空闲状态一目了然。打开会话即可阅读对话记录、检查 diff，并实时跟随每一次工具调用。</p>
+          <h3>すべてのプロジェクトを 1 か所で</h3>
+          <p>すべてのエージェントの指揮を執れます。作業中、入力待ち、待機中の状態がひと目で分かります。セッションを開けば、トランスクリプトを読み、差分を確認し、ツール呼び出しをリアルタイムで追えます。</p>
         </div>
         <div class="cell reveal">
           <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg></span>
-          <h3>通知收件箱</h3>
-          <p>权限请求、智能体提问和运行完成通知，汇聚在同一个跨多服务端的收件箱里。</p>
+          <h3>通知の受信箱</h3>
+          <p>権限リクエスト、エージェントからの質問、完了した実行が、複数サーバー共通の 1 つの受信箱に届きます。</p>
         </div>
         <div class="cell reveal">
           <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"/><line x1="12" y1="19" x2="20" y2="19"/></svg></span>
-          <h3>双向同步</h3>
-          <p>从应用发送提示词，终端照常运转 —— Codex、OpenCode、Pi 会话两端始终保持一致。Claude Code 会话在接管前保持只读。</p>
+          <h3>本物の同期</h3>
+          <p>ターミナルを動かしたままアプリからプロンプトを送れます。Codex、OpenCode、Pi では両側が完全に足並みをそろえます。Claude Code のセッションは、引き継ぐまで読み取り専用です。</p>
         </div>
         <div class="cell reveal">
           <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-          <h3>显式配对</h3>
-          <p>设备通过一张五分钟有效、仅限一次的二维码获得授权 —— 可在 CLI 中列出和撤销。</p>
+          <h3>明示的なペアリング</h3>
+          <p>端末へのアクセス許可は、5 分間有効・1 回限りの QR コードで行います。一覧表示と失効は CLI から。</p>
         </div>
         <div class="cell reveal">
           <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></span>
-          <h3>定时消息</h3>
-          <p>把提示词安排在指定时间送达 —— 智能体会准时收到并开始工作。</p>
+          <h3>メッセージの予約送信</h3>
+          <p>指定した時刻に届くようプロンプトを予約できます。エージェントは予定どおりに受け取ります。</p>
         </div>
       </div>
     </div>
@@ -701,24 +706,24 @@
   <section id="how" class="block" style="padding-top:20px">
     <div class="wrap">
       <div class="sec-head center">
-        <span class="kicker reveal">How it works</span>
-        <h2 class="h2 reveal">三步搞定，无需账号</h2>
+        <span class="kicker reveal">仕組み</span>
+        <h2 class="h2 reveal">3 ステップ、アカウント不要</h2>
       </div>
       <div class="steps">
         <div class="step reveal">
           <span class="n">1</span>
-          <h3>运行服务端</h3>
-          <p><span class="mono">cosyncing setup</span> 会清楚展示它将改动的内容，然后要么整体应用、要么完全不动。</p>
+          <h3>サーバーを動かす</h3>
+          <p><span class="mono">cosyncing setup</span> は何を変更するかを正確に示し、計画全体を適用するか、まったく適用しないかのどちらかを行います。</p>
         </div>
         <div class="step reveal">
           <span class="n">2</span>
-          <h3>配对设备</h3>
-          <p><span class="mono">cosyncing pair</span> 打印一张仅限一次的二维码。用任意客户端扫码，即可授权该设备。</p>
+          <h3>端末をペアリングする</h3>
+          <p><span class="mono">cosyncing pair</span> が使い切りの QR コードを表示します。どのクライアントからでも読み取れば、その端末にアクセスを許可できます。</p>
         </div>
         <div class="step reveal">
           <span class="n">3</span>
-          <h3>持续前行</h3>
-          <p>回应提问、阅读对话记录，或直接接管 —— 在你网络里的浏览器、手机或桌面上。</p>
+          <h3>そのまま進む</h3>
+          <p>質問に答える、トランスクリプトを読む、操作を引き継ぐ。あなたのネットワーク上のブラウザー、携帯、デスクトップのどれからでもできます。</p>
         </div>
       </div>
     </div>
@@ -728,21 +733,22 @@
   <section id="privacy" class="block" style="padding-top:20px">
     <div class="wrap">
       <div class="band reveal">
-        <span class="kicker">Privacy &amp; security</span>
-        <h2 class="h2">你的机器。你的网络。你的数据。</h2>
+        <span class="kicker">プライバシーとセキュリティ</span>
+        <h2 class="h2">あなたのマシン。あなたのネットワーク。あなたのデータ。</h2>
         <p class="lead" style="max-width:620px">
-          服务端状态留在运行它的那台机器上。会话内容只会通过你选择的网络发送给已认证的客户端。
+          サーバーの状態は、それを動かしているマシンに留まります。セッションの内容は、あなたが選んだ
+          ネットワーク経由で認証済みのクライアントにだけ送られます。
         </p>
         <div class="grid">
           <div class="item">
             <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-            <h3>没有托管中继</h3>
-            <p>连接路径中没有 cosyncing 运营的服务，也不含分析或广告遥测。可选集成只会联系你选择的服务。</p>
+            <h3>中継サービスなし</h3>
+            <p>通信経路に cosyncing が運用するサービスは存在しません。分析や広告のテレメトリーもありません。任意の連携機能は、あなたが選んだサービスにだけ接続します。</p>
           </div>
           <div class="item">
             <span class="glyph"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></span>
-            <h3>默认即可撤销</h3>
-            <p><span class="mono">cosyncing devices list</span> 列出已配对设备；<span class="mono">devices revoke &lt;id&gt;</span> 撤销指定设备。</p>
+            <h3>いつでも失効できる</h3>
+            <p><span class="mono">cosyncing devices list</span> でペアリング済みの端末を一覧表示し、<span class="mono">devices revoke &lt;id&gt;</span> で 1 台を失効させます。</p>
           </div>
         </div>
       </div>
@@ -752,14 +758,14 @@
   <!-- Attention -->
   <section class="block" style="padding-top:20px">
     <div class="wrap sec-head center">
-      <span class="kicker reveal">Never miss a prompt</span>
-      <h2 class="h2 reveal">每个提问，一个收件箱</h2>
-      <p class="lead reveal">当智能体需要你时，就会出现在通知收件箱里。用手边的任何一台设备回答即可。</p>
+      <span class="kicker reveal">質問を見逃さない</span>
+      <h2 class="h2 reveal">すべての質問を 1 つの受信箱に</h2>
+      <p class="lead reveal">エージェントがあなたを必要としたら、通知の受信箱に届きます。そのとき手元にある端末から答えられます。</p>
       <ul class="check-list reveal">
-        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>权限请求</b>附带完整的命令上下文 —— 一次点按即可批准或驳回。</span></li>
-        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>智能体提问</b>期间会话保持连接，回答直接落在智能体等待的地方。</span></li>
-        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>运行完成</b> —— 长任务跑完时同样会通知你，而不只是等待你回应时。</span></li>
-        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>多服务端</b> —— 每个已配对的服务端都汇报到同一个列表。</span></li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>権限リクエスト</b> はコマンドの文脈つきで届きます。ワンタップで承認するか、閉じられます。</span></li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>エージェントからの質問</b> はセッションに接続したままなので、答えはエージェントが待っている場所に届きます。</span></li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>完了した実行</b> — 長い処理は、待っているときだけでなく、終わったときにも知らせます。</span></li>
+        <li><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg><span><b>複数サーバー対応</b> — ペアリング済みのすべてのサーバーが同じ一覧に集まります。</span></li>
       </ul>
     </div>
   </section>
@@ -768,12 +774,12 @@
 
 <footer>
   <div class="wrap row">
-    <span>cosyncing —— 代码随处。同步无界。 · Apache-2.0</span>
-    <nav class="links" aria-label="页脚导航">
+    <span>cosyncing — どこでもコーディング。どこでも同期。 · Apache-2.0</span>
+    <nav class="links" aria-label="フッター">
       <a href="https://github.com/cosyncing/cosyncing">GitHub</a>
-      <a href="https://github.com/cosyncing/cosyncing/blob/main/docs/README.md">文档</a>
-      <a href="https://github.com/cosyncing/cosyncing/blob/main/CONTRIBUTING.md">参与贡献</a>
-      <a href="demo/index.html">演示</a>
+      <a href="https://github.com/cosyncing/cosyncing/blob/main/docs/README.md">ドキュメント</a>
+      <a href="https://github.com/cosyncing/cosyncing/blob/main/CONTRIBUTING.md">コントリビュート</a>
+      <a href="demo/index.html">デモ</a>
     </nav>
   </div>
 </footer>

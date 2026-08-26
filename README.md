@@ -10,10 +10,15 @@ Official project site for [cosyncing](https://github.com/cosyncing/cosyncing) �
   preference by default.
 - `demo/` — the client UI demo: Desktop, Web, and Phone sections showing
   real app captures in dark and light. Images follow the page theme toggle.
+- `zh/`, `ja/`, `ko/`, `es/` — the same two pages per locale, each with its
+  own `demo/`. The nav language menu and the `hreflang` set list all five;
+  keep them in step when adding a locale. Page-relative links only, so the
+  tree still works opened as files.
 - `assets/icons/` — favicons and PWA icons, copied from the client
   (`apps/client/web/`).
 - `assets/brand/` — logo SVGs, Open Graph image, and the slogan banners
   (`banner/`, 2400×1260, theme-aware; from `apps/client/assets/brand/marketing/`).
+  Each locale has its own pair, rendered from the matching banner template.
 - `assets/agents/` — agent pill images (Claude Code, Codex, OpenCode, Pi).
 - `assets/shots/demo/real/<mode>/` — screenshots of the running app
   (dark/light): `workspace`, `detail`, `sessions`, `chat`, `attention`.

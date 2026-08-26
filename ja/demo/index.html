@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ja">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,9 +14,9 @@
   gtag('config', 'G-KCR40P3JG6');
 </script>
 
-<title>cosyncing — client UI demo</title>
-<meta name="description" content="The cosyncing client, captured from the running app: desktop, web, and phone screens in dark and light — sessions, chat with take-over, and the attention inbox." />
-<link rel="canonical" href="https://cosyncing.com/demo/" />
+<title>cosyncing — クライアント UI デモ</title>
+<meta name="description" content="実際に動作している cosyncing クライアントの画面: デスクトップ、Web、携帯をダークとライトで — セッション、引き継ぎができるチャット、通知の受信箱。" />
+<link rel="canonical" href="https://cosyncing.com/ja/demo/" />
 <link rel="alternate" hreflang="en" href="https://cosyncing.com/demo/" />
 <link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/demo/" />
 <link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/demo/" />
@@ -24,9 +24,9 @@
 <link rel="alternate" hreflang="es" href="https://cosyncing.com/es/demo/" />
 <link rel="alternate" hreflang="x-default" href="https://cosyncing.com/demo/" />
 
-<link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
-<link rel="icon" type="image/x-icon" href="../assets/icons/favicon.ico" sizes="any" />
-<link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon-180.png" />
+<link rel="icon" type="image/svg+xml" href="../../assets/icons/favicon.svg" />
+<link rel="icon" type="image/x-icon" href="../../assets/icons/favicon.ico" sizes="any" />
+<link rel="apple-touch-icon" href="../../assets/icons/apple-touch-icon-180.png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -275,30 +275,30 @@
 
 <header class="site-nav">
   <div class="bar">
-    <a class="brand" href="../index.html" aria-label="Back to cosyncing home">
-      <img class="light-only" src="../assets/brand/cosyncing-mark-two-tone-light.svg" alt="" />
-      <img class="dark-only" src="../assets/brand/cosyncing-mark-two-tone-dark.svg" alt="" />
-      <span>cosyncing</span><span class="crumb">/ UI demo</span>
+    <a class="brand" href="../index.html" aria-label="cosyncing ホームに戻る">
+      <img class="light-only" src="../../assets/brand/cosyncing-mark-two-tone-light.svg" alt="" />
+      <img class="dark-only" src="../../assets/brand/cosyncing-mark-two-tone-dark.svg" alt="" />
+      <span>cosyncing</span><span class="crumb">/ UI デモ</span>
     </a>
-    <nav class="nav-links" aria-label="Demo sections">
-      <a href="#desktop" class="nav-link">Desktop</a>
-      <a href="#web" class="nav-link">Web</a>
-      <a href="#phone" class="nav-link">Phone</a>
-      <a href="../index.html" class="nav-link">&larr; Home</a>
+    <nav class="nav-links" aria-label="デモの各セクション">
+      <a href="#desktop" class="nav-link">デスクトップ</a>
+      <a href="#web" class="nav-link">ウェブ</a>
+      <a href="#phone" class="nav-link">携帯</a>
+      <a href="../index.html" class="nav-link">&larr; ホーム</a>
       <div class="lang-menu">
         <button type="button" class="lang-btn" id="lang-btn"
-                aria-haspopup="true" aria-expanded="false" aria-label="Choose language">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg><span>EN</span>
+                aria-haspopup="true" aria-expanded="false" aria-label="言語を選択">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg><span>JA</span>
         </button>
         <div class="lang-pop" id="lang-pop" role="menu" hidden>
-        <a role="menuitem" href="../demo/index.html" lang="en" hreflang="en" aria-current="true">English</a>
-        <a role="menuitem" href="../zh/demo/index.html" lang="zh-CN" hreflang="zh-CN">简体中文</a>
-        <a role="menuitem" href="../ja/demo/index.html" lang="ja" hreflang="ja">日本語</a>
-        <a role="menuitem" href="../ko/demo/index.html" lang="ko" hreflang="ko">한국어</a>
-        <a role="menuitem" href="../es/demo/index.html" lang="es" hreflang="es">Español</a>
+        <a role="menuitem" href="../../demo/index.html" lang="en" hreflang="en">English</a>
+        <a role="menuitem" href="../../zh/demo/index.html" lang="zh-CN" hreflang="zh-CN">简体中文</a>
+        <a role="menuitem" href="../../ja/demo/index.html" lang="ja" hreflang="ja" aria-current="true">日本語</a>
+        <a role="menuitem" href="../../ko/demo/index.html" lang="ko" hreflang="ko">한국어</a>
+        <a role="menuitem" href="../../es/demo/index.html" lang="es" hreflang="es">Español</a>
         </div>
       </div>
-      <button class="icon-btn" id="theme-toggle" aria-label="Toggle dark mode">
+      <button class="icon-btn" id="theme-toggle" aria-label="ダークモードを切り替え">
         <svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         <svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
       </button>
@@ -309,16 +309,16 @@
 <main>
 
   <div class="page-head wrap">
-    <span class="kicker reveal">Client UI demo</span>
-    <h1 class="reveal">See the client before you install</h1>
+    <span class="kicker reveal">クライアント UI デモ</span>
+    <h1 class="reveal">入れる前に、クライアントを見てみる</h1>
     <p class="lead reveal">
-      Every screen below is captured from the running cosyncing client — sessions,
-      chat with take-over, and the attention inbox. No mockups: a live server served
-      these views, and a scripted fixture kept the sessions deterministic.
+      以下はすべて、実際に動いている cosyncing クライアントの画面です。セッション、引き継ぎができる
+      チャット、通知の受信箱。モックアップではありません。稼働中のサーバーがこれらの画面を配信し、
+      スクリプト化したフィクスチャがセッションの内容を固定しています。
     </p>
     <span class="theme-hint reveal">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-      Screenshots follow the page theme — toggle dark/light in the nav.
+      スクリーンショットはページのテーマに従います。ナビゲーションでダーク／ライトを切り替えられます。
     </span>
   </div>
 
@@ -327,11 +327,11 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="no">1</span>
-        <h2>Desktop</h2>
+        <h2>デスクトップ</h2>
         <p>
-          The wide layout puts the session roster and the open session side by side.
-          Search and filter across projects, watch diffs and test runs stream in, and
-          steer from the composer — on Linux, macOS, or Windows.
+          横幅の広いレイアウトでは、セッション一覧と開いているセッションが左右に並びます。
+          プロジェクトをまたいで検索・絞り込みし、差分やテスト実行が流れてくるのを眺め、
+          入力欄から指示を出せます。Linux、macOS、Windows で使えます。
         </p>
       </div>
       <div class="win reveal">
@@ -340,10 +340,10 @@
           <span class="dot" style="background:#F59E0B"></span>
           <span class="dot" style="background:#14B8A6"></span>
         </div>
-        <img src="../assets/shots/demo/real/dark/workspace.png" data-shot="workspace"
-             alt="cosyncing desktop client: session roster grouped by project beside a live session transcript with diffs and test output" />
+        <img src="../../assets/shots/demo/real/dark/workspace.png" data-shot="workspace"
+             alt="cosyncing のデスクトップクライアント: プロジェクトごとにまとまったセッション一覧の横に、差分とテスト出力を含むライブのトランスクリプト" />
       </div>
-      <p class="win-cap reveal">The workspace: roster on the left, the running session on the right — diffs, tool calls, and test results as they happen.</p>
+      <p class="win-cap reveal">ワークスペース: 左に一覧、右に実行中のセッション。差分、ツール呼び出し、テスト結果がリアルタイムで流れます。</p>
 
       <div class="win reveal">
         <div class="chrome">
@@ -351,10 +351,10 @@
           <span class="dot" style="background:#F59E0B"></span>
           <span class="dot" style="background:#14B8A6"></span>
         </div>
-        <img src="../assets/shots/demo/real/dark/detail.png" data-shot="detail"
-             alt="cosyncing session detail: a pending permission request with Reject and Allow once actions, while Driving the session" />
+        <img src="../../assets/shots/demo/real/dark/detail.png" data-shot="detail"
+             alt="cosyncing のセッション詳細: 操作中のセッションで、拒否と今回だけ許可の選択肢がある未処理の権限リクエスト" />
       </div>
-      <p class="win-cap reveal">After take-over, the session shows <b>Driving</b> — and a permission request waits on you, with full command context.</p>
+      <p class="win-cap reveal">引き継いだ後、セッションは<b>操作中</b>と表示され、コマンドの文脈がそろった権限リクエストがあなたを待ちます。</p>
     </div>
   </section>
 
@@ -363,12 +363,11 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="no">2</span>
-        <h2>Web</h2>
+        <h2>ウェブ</h2>
         <p>
-          The same client, served by your own server at <span class="mono">/cosy/</span>.
-          The Flutter web build ships inside the npm package — nothing is fetched at
-          runtime and no third-party host is involved. Open it in any browser that can
-          reach the server.
+          同じクライアントを、あなた自身のサーバーが <span class="mono">/cosy/</span> で配信します。
+          Flutter の Web ビルドは npm パッケージに同梱されており、実行時に何かを取得することも、
+          第三者のホストが関わることもありません。サーバーに到達できるブラウザーなら、どれでも開けます。
         </p>
       </div>
       <div class="win reveal">
@@ -378,8 +377,8 @@
           <span class="dot" style="background:#14B8A6"></span>
           <span class="url">http://192.168.1.10:7734/cosy/</span>
         </div>
-        <img src="../assets/shots/demo/real/dark/workspace.png" data-shot="workspace"
-             alt="cosyncing web client in a browser: the same wide session layout, served by the server at /cosy/" />
+        <img src="../../assets/shots/demo/real/dark/workspace.png" data-shot="workspace"
+             alt="ブラウザーで動く cosyncing の Web クライアント: サーバーが /cosy/ で配信する、同じ横幅の広いセッションレイアウト" />
       </div>
     </div>
   </section>
@@ -389,24 +388,24 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="no">3</span>
-        <h2>Phone</h2>
+        <h2>携帯</h2>
         <p>
-          The compact layout on Android and iOS. Pair once with a one-use QR, then keep
-          an eye on every agent from wherever you are.
+          Android と iOS ではコンパクトなレイアウトになります。使い切りの QR コードで一度ペアリングすれば、
+          どこにいてもすべてのエージェントを見守れます。
         </p>
       </div>
       <div class="phone-grid">
         <div class="shot-card reveal">
-          <div class="img-wrap"><img src="../assets/shots/demo/real/dark/sessions.png" data-shot="sessions" alt="Sessions: every session grouped by project with filters and live status" /></div>
-          <div class="cap"><h3>Sessions</h3><p>Every session across your servers, grouped by project — search, filter by status or agent, see what's working and what's waiting.</p></div>
+          <div class="img-wrap"><img src="../../assets/shots/demo/real/dark/sessions.png" data-shot="sessions" alt="セッション: プロジェクトごとにまとまったすべてのセッションと、絞り込み、ライブの状態表示" /></div>
+          <div class="cap"><h3>セッション</h3><p>すべてのサーバーのセッションをプロジェクトごとにまとめて表示。検索し、状態やエージェントで絞り込み、何が動いていて何が待っているかを把握できます。</p></div>
         </div>
         <div class="shot-card reveal">
-          <div class="img-wrap"><img src="../assets/shots/demo/real/dark/chat.png" data-shot="chat" alt="Session chat: transcript with tool calls and a composer" /></div>
-          <div class="cap"><h3>Session chat</h3><p>The full transcript with tool calls and diffs. Answer, steer, or take over from the composer.</p></div>
+          <div class="img-wrap"><img src="../../assets/shots/demo/real/dark/chat.png" data-shot="chat" alt="セッションのチャット: ツール呼び出しを含むトランスクリプトと入力欄" /></div>
+          <div class="cap"><h3>セッションのチャット</h3><p>ツール呼び出しと差分を含む完全なトランスクリプト。入力欄から答え、指示を出し、操作を引き継げます。</p></div>
         </div>
         <div class="shot-card reveal">
-          <div class="img-wrap"><img src="../assets/shots/demo/real/dark/attention.png" data-shot="attention" alt="Attention inbox: permission requests and questions in one list" /></div>
-          <div class="cap"><h3>Attention</h3><p>Permission requests, agent questions, and server maintenance — one multi-server inbox.</p></div>
+          <div class="img-wrap"><img src="../../assets/shots/demo/real/dark/attention.png" data-shot="attention" alt="通知の受信箱: 権限リクエストと質問が 1 つの一覧に" /></div>
+          <div class="cap"><h3>通知</h3><p>権限リクエスト、エージェントからの質問、サーバーのメンテナンス。複数サーバー共通の 1 つの受信箱に集まります。</p></div>
         </div>
       </div>
     </div>
@@ -416,8 +415,8 @@
 
 <footer>
   <div class="wrap row">
-    <span>Captured from the running app against a deterministic fixture — not mockups.</span>
-    <a href="../index.html">&larr; Back to cosyncing.com</a>
+    <span>決定的なフィクスチャに対して動作するアプリから取得した実画面です。モックアップではありません。</span>
+    <a href="../index.html">&larr; cosyncing.com に戻る</a>
   </div>
 </footer>
 

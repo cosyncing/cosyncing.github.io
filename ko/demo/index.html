@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -14,9 +14,9 @@
   gtag('config', 'G-KCR40P3JG6');
 </script>
 
-<title>cosyncing — client UI demo</title>
-<meta name="description" content="The cosyncing client, captured from the running app: desktop, web, and phone screens in dark and light — sessions, chat with take-over, and the attention inbox." />
-<link rel="canonical" href="https://cosyncing.com/demo/" />
+<title>cosyncing — 클라이언트 UI 데모</title>
+<meta name="description" content="실제로 실행 중인 cosyncing 클라이언트 화면: 데스크톱, 웹, 휴대폰을 다크와 라이트로 — 세션, 제어권을 가져올 수 있는 대화, 알림 수신함." />
+<link rel="canonical" href="https://cosyncing.com/ko/demo/" />
 <link rel="alternate" hreflang="en" href="https://cosyncing.com/demo/" />
 <link rel="alternate" hreflang="zh-CN" href="https://cosyncing.com/zh/demo/" />
 <link rel="alternate" hreflang="ja" href="https://cosyncing.com/ja/demo/" />
@@ -24,9 +24,9 @@
 <link rel="alternate" hreflang="es" href="https://cosyncing.com/es/demo/" />
 <link rel="alternate" hreflang="x-default" href="https://cosyncing.com/demo/" />
 
-<link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
-<link rel="icon" type="image/x-icon" href="../assets/icons/favicon.ico" sizes="any" />
-<link rel="apple-touch-icon" href="../assets/icons/apple-touch-icon-180.png" />
+<link rel="icon" type="image/svg+xml" href="../../assets/icons/favicon.svg" />
+<link rel="icon" type="image/x-icon" href="../../assets/icons/favicon.ico" sizes="any" />
+<link rel="apple-touch-icon" href="../../assets/icons/apple-touch-icon-180.png" />
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -275,30 +275,30 @@
 
 <header class="site-nav">
   <div class="bar">
-    <a class="brand" href="../index.html" aria-label="Back to cosyncing home">
-      <img class="light-only" src="../assets/brand/cosyncing-mark-two-tone-light.svg" alt="" />
-      <img class="dark-only" src="../assets/brand/cosyncing-mark-two-tone-dark.svg" alt="" />
-      <span>cosyncing</span><span class="crumb">/ UI demo</span>
+    <a class="brand" href="../index.html" aria-label="cosyncing 홈으로 돌아가기">
+      <img class="light-only" src="../../assets/brand/cosyncing-mark-two-tone-light.svg" alt="" />
+      <img class="dark-only" src="../../assets/brand/cosyncing-mark-two-tone-dark.svg" alt="" />
+      <span>cosyncing</span><span class="crumb">/ UI 데모</span>
     </a>
-    <nav class="nav-links" aria-label="Demo sections">
-      <a href="#desktop" class="nav-link">Desktop</a>
-      <a href="#web" class="nav-link">Web</a>
-      <a href="#phone" class="nav-link">Phone</a>
-      <a href="../index.html" class="nav-link">&larr; Home</a>
+    <nav class="nav-links" aria-label="데모 구성">
+      <a href="#desktop" class="nav-link">데스크톱</a>
+      <a href="#web" class="nav-link">웹</a>
+      <a href="#phone" class="nav-link">휴대폰</a>
+      <a href="../index.html" class="nav-link">&larr; 홈</a>
       <div class="lang-menu">
         <button type="button" class="lang-btn" id="lang-btn"
-                aria-haspopup="true" aria-expanded="false" aria-label="Choose language">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg><span>EN</span>
+                aria-haspopup="true" aria-expanded="false" aria-label="언어 선택">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18"/></svg><span>KO</span>
         </button>
         <div class="lang-pop" id="lang-pop" role="menu" hidden>
-        <a role="menuitem" href="../demo/index.html" lang="en" hreflang="en" aria-current="true">English</a>
-        <a role="menuitem" href="../zh/demo/index.html" lang="zh-CN" hreflang="zh-CN">简体中文</a>
-        <a role="menuitem" href="../ja/demo/index.html" lang="ja" hreflang="ja">日本語</a>
-        <a role="menuitem" href="../ko/demo/index.html" lang="ko" hreflang="ko">한국어</a>
-        <a role="menuitem" href="../es/demo/index.html" lang="es" hreflang="es">Español</a>
+        <a role="menuitem" href="../../demo/index.html" lang="en" hreflang="en">English</a>
+        <a role="menuitem" href="../../zh/demo/index.html" lang="zh-CN" hreflang="zh-CN">简体中文</a>
+        <a role="menuitem" href="../../ja/demo/index.html" lang="ja" hreflang="ja">日本語</a>
+        <a role="menuitem" href="../../ko/demo/index.html" lang="ko" hreflang="ko" aria-current="true">한국어</a>
+        <a role="menuitem" href="../../es/demo/index.html" lang="es" hreflang="es">Español</a>
         </div>
       </div>
-      <button class="icon-btn" id="theme-toggle" aria-label="Toggle dark mode">
+      <button class="icon-btn" id="theme-toggle" aria-label="다크 모드 전환">
         <svg class="moon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
         <svg class="sun" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
       </button>
@@ -309,16 +309,16 @@
 <main>
 
   <div class="page-head wrap">
-    <span class="kicker reveal">Client UI demo</span>
-    <h1 class="reveal">See the client before you install</h1>
+    <span class="kicker reveal">클라이언트 UI 데모</span>
+    <h1 class="reveal">설치하기 전에 클라이언트를 먼저 보세요</h1>
     <p class="lead reveal">
-      Every screen below is captured from the running cosyncing client — sessions,
-      chat with take-over, and the attention inbox. No mockups: a live server served
-      these views, and a scripted fixture kept the sessions deterministic.
+      아래 화면은 모두 실제로 실행 중인 cosyncing 클라이언트에서 찍은 것입니다. 세션, 제어권을
+      가져올 수 있는 대화, 알림 수신함. 목업이 아닙니다. 실제로 동작하는 서버가 이 화면들을
+      제공했고, 스크립트로 만든 픽스처가 세션 내용을 고정했습니다.
     </p>
     <span class="theme-hint reveal">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
-      Screenshots follow the page theme — toggle dark/light in the nav.
+      스크린샷은 페이지 테마를 따릅니다. 상단 메뉴에서 다크/라이트를 전환하세요.
     </span>
   </div>
 
@@ -327,11 +327,11 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="no">1</span>
-        <h2>Desktop</h2>
+        <h2>데스크톱</h2>
         <p>
-          The wide layout puts the session roster and the open session side by side.
-          Search and filter across projects, watch diffs and test runs stream in, and
-          steer from the composer — on Linux, macOS, or Windows.
+          넓은 레이아웃에서는 세션 목록과 열려 있는 세션이 나란히 놓입니다. 프로젝트를 넘나들며
+          검색하고 걸러 내고, 변경 내용과 테스트 실행이 흘러오는 것을 지켜보며, 입력창에서
+          방향을 잡으세요. Linux, macOS, Windows에서 쓸 수 있습니다.
         </p>
       </div>
       <div class="win reveal">
@@ -340,10 +340,10 @@
           <span class="dot" style="background:#F59E0B"></span>
           <span class="dot" style="background:#14B8A6"></span>
         </div>
-        <img src="../assets/shots/demo/real/dark/workspace.png" data-shot="workspace"
-             alt="cosyncing desktop client: session roster grouped by project beside a live session transcript with diffs and test output" />
+        <img src="../../assets/shots/demo/real/dark/workspace.png" data-shot="workspace"
+             alt="cosyncing 데스크톱 클라이언트: 프로젝트별로 묶인 세션 목록 옆에 변경 내용과 테스트 출력이 담긴 실시간 대화 기록" />
       </div>
-      <p class="win-cap reveal">The workspace: roster on the left, the running session on the right — diffs, tool calls, and test results as they happen.</p>
+      <p class="win-cap reveal">작업 화면: 왼쪽에 목록, 오른쪽에 실행 중인 세션. 변경 내용, 도구 호출, 테스트 결과가 실시간으로 흐릅니다.</p>
 
       <div class="win reveal">
         <div class="chrome">
@@ -351,10 +351,10 @@
           <span class="dot" style="background:#F59E0B"></span>
           <span class="dot" style="background:#14B8A6"></span>
         </div>
-        <img src="../assets/shots/demo/real/dark/detail.png" data-shot="detail"
-             alt="cosyncing session detail: a pending permission request with Reject and Allow once actions, while Driving the session" />
+        <img src="../../assets/shots/demo/real/dark/detail.png" data-shot="detail"
+             alt="cosyncing 세션 상세: 세션을 조작하는 중에 거부와 한 번만 허용 선택지가 있는 대기 중 권한 요청" />
       </div>
-      <p class="win-cap reveal">After take-over, the session shows <b>Driving</b> — and a permission request waits on you, with full command context.</p>
+      <p class="win-cap reveal">제어권을 가져오면 세션이 <b>조작 중</b>으로 표시되고, 명령의 전체 맥락이 담긴 권한 요청이 여러분을 기다립니다.</p>
     </div>
   </section>
 
@@ -363,12 +363,11 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="no">2</span>
-        <h2>Web</h2>
+        <h2>웹</h2>
         <p>
-          The same client, served by your own server at <span class="mono">/cosy/</span>.
-          The Flutter web build ships inside the npm package — nothing is fetched at
-          runtime and no third-party host is involved. Open it in any browser that can
-          reach the server.
+          같은 클라이언트를 여러분의 서버가 <span class="mono">/cosy/</span>에서 직접 제공합니다.
+          Flutter 웹 빌드는 npm 패키지 안에 들어 있어, 실행 중에 무언가를 내려받지도 않고
+          제3자 호스트가 끼어들지도 않습니다. 서버에 접근할 수 있는 브라우저라면 어디서든 열 수 있습니다.
         </p>
       </div>
       <div class="win reveal">
@@ -378,8 +377,8 @@
           <span class="dot" style="background:#14B8A6"></span>
           <span class="url">http://192.168.1.10:7734/cosy/</span>
         </div>
-        <img src="../assets/shots/demo/real/dark/workspace.png" data-shot="workspace"
-             alt="cosyncing web client in a browser: the same wide session layout, served by the server at /cosy/" />
+        <img src="../../assets/shots/demo/real/dark/workspace.png" data-shot="workspace"
+             alt="브라우저에서 실행 중인 cosyncing 웹 클라이언트: 서버가 /cosy/에서 제공하는 동일한 넓은 세션 레이아웃" />
       </div>
     </div>
   </section>
@@ -389,24 +388,24 @@
     <div class="wrap">
       <div class="sec-head reveal">
         <span class="no">3</span>
-        <h2>Phone</h2>
+        <h2>휴대폰</h2>
         <p>
-          The compact layout on Android and iOS. Pair once with a one-use QR, then keep
-          an eye on every agent from wherever you are.
+          Android와 iOS에서는 좁은 레이아웃으로 표시됩니다. 일회용 QR 코드로 한 번 페어링하면,
+          어디에 있든 모든 에이전트를 지켜볼 수 있습니다.
         </p>
       </div>
       <div class="phone-grid">
         <div class="shot-card reveal">
-          <div class="img-wrap"><img src="../assets/shots/demo/real/dark/sessions.png" data-shot="sessions" alt="Sessions: every session grouped by project with filters and live status" /></div>
-          <div class="cap"><h3>Sessions</h3><p>Every session across your servers, grouped by project — search, filter by status or agent, see what's working and what's waiting.</p></div>
+          <div class="img-wrap"><img src="../../assets/shots/demo/real/dark/sessions.png" data-shot="sessions" alt="세션: 프로젝트별로 묶인 모든 세션과 필터, 실시간 상태" /></div>
+          <div class="cap"><h3>세션</h3><p>여러 서버의 모든 세션을 프로젝트별로 묶어 보여 줍니다. 검색하고, 상태나 에이전트로 거르고, 무엇이 일하고 무엇이 기다리는지 확인하세요.</p></div>
         </div>
         <div class="shot-card reveal">
-          <div class="img-wrap"><img src="../assets/shots/demo/real/dark/chat.png" data-shot="chat" alt="Session chat: transcript with tool calls and a composer" /></div>
-          <div class="cap"><h3>Session chat</h3><p>The full transcript with tool calls and diffs. Answer, steer, or take over from the composer.</p></div>
+          <div class="img-wrap"><img src="../../assets/shots/demo/real/dark/chat.png" data-shot="chat" alt="세션 대화: 도구 호출이 포함된 대화 기록과 입력창" /></div>
+          <div class="cap"><h3>세션 대화</h3><p>도구 호출과 변경 내용을 포함한 전체 대화 기록. 입력창에서 답하고, 방향을 잡고, 제어권을 가져오세요.</p></div>
         </div>
         <div class="shot-card reveal">
-          <div class="img-wrap"><img src="../assets/shots/demo/real/dark/attention.png" data-shot="attention" alt="Attention inbox: permission requests and questions in one list" /></div>
-          <div class="cap"><h3>Attention</h3><p>Permission requests, agent questions, and server maintenance — one multi-server inbox.</p></div>
+          <div class="img-wrap"><img src="../../assets/shots/demo/real/dark/attention.png" data-shot="attention" alt="알림 수신함: 권한 요청과 질문이 하나의 목록에" /></div>
+          <div class="cap"><h3>알림</h3><p>권한 요청, 에이전트의 질문, 서버 유지 관리 — 여러 서버를 아우르는 하나의 수신함.</p></div>
         </div>
       </div>
     </div>
@@ -416,8 +415,8 @@
 
 <footer>
   <div class="wrap row">
-    <span>Captured from the running app against a deterministic fixture — not mockups.</span>
-    <a href="../index.html">&larr; Back to cosyncing.com</a>
+    <span>결정적 픽스처를 상대로 실행한 앱에서 찍은 실제 화면입니다. 목업이 아닙니다.</span>
+    <a href="../index.html">&larr; cosyncing.com으로 돌아가기</a>
   </div>
 </footer>
 
