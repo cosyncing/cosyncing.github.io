@@ -329,6 +329,16 @@
   .terminal .c { color: var(--text3); }
   .terminal .p { color: var(--accent); user-select: none; }
 
+
+  .terminal .install-chrome { align-items: center; justify-content: space-between; gap: 12px; }
+  .install-label { font-size: 0.85rem; font-weight: 600; }
+  .copy-command { font: inherit; font-size: 0.8rem; color: var(--accent); background: var(--surface); border: 1px solid var(--separator); border-radius: 6px; padding: 7px 12px; cursor: pointer; flex-shrink: 0; }
+  .copy-command:hover { background: var(--surface2); }
+  .copy-command:focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+  .terminal pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .install-links { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px 24px; margin: 24px auto 0; }
+  .copy-status { min-height: 1.5em; margin: 8px 0 0; font-size: 0.85rem; color: var(--text3); }
+
   /* ---- Footer ---- */
   footer { border-top: 1px solid var(--separator); margin-top: 30px; }
   footer .row { display: flex; flex-wrap: wrap; gap: 12px 26px; align-items: center; justify-content: space-between; padding: 28px 0 38px; color: var(--text3); font-size: 0.88rem; }
@@ -504,31 +514,32 @@
   <!-- Install -->
   <section id="download" class="block" style="padding-top:20px; text-align:center">
     <div class="wrap">
-      <span class="kicker reveal">下载</span>
-      <h2 class="h2 reveal">安装服务端，下载客户端</h2>
-      <p class="lead reveal" style="max-width:600px; margin:0 auto">
-        前置要求：每台设备都需要 Tailscale；服务端还需要 Bun 1.3.8+ 与 npm。强烈建议配合
-        <a href="https://github.com/JingbiaoMei/tokdash">Tokdash</a> 做配额跟踪。详见<a href="https://github.com/cosyncing/cosyncing/blob/main/docs/installation/prerequisites.md">完整前置要求</a>。
-      </p>
+      <h2 class="h2 reveal">一条命令，安装并连接。</h2>
+      <p class="lead reveal" style="max-width:680px; margin:0 auto">安装 Broker 和桌面客户端，再按 setup 提示完成配对。脚本会按需安装 Bun。本机使用无需 Node.js、npm 或 VPN。</p>
       <div class="terminal reveal">
-        <div class="chrome">
-          <span class="dot" style="background:#EF4444"></span>
-          <span class="dot" style="background:#F59E0B"></span>
-          <span class="dot" style="background:#14B8A6"></span>
+        <div class="chrome install-chrome">
+          <span class="install-label" id="install-sh-label">Linux / Apple Silicon macOS</span>
+          <button class="copy-command" type="button" data-copy-command="install-sh" data-copied="已复制" data-failed="请选中并复制命令" aria-describedby="install-sh-label">复制</button>
         </div>
-<pre><span class="c"># 已登录 Tailscale；已安装 Bun 1.3.8+ 与 Node.js/npm</span>
-<span class="p">$</span> npm install --global cosyncing
-<span class="p">$</span> cosyncing setup
-<span class="c"># setup 完成后，cosy 是 cosyncing 的简写</span>
-<span class="p">$</span> cosy pair</pre>
+        <pre><code id="install-sh">curl --proto '=https' --tlsv1.2 -fsSL https://cosyncing.com/install.sh | sh</code></pre>
       </div>
-      <p class="lead reveal" style="max-width:600px; margin:26px auto 0">
-        然后为每台要使用的设备下载客户端。Windows、macOS、Linux 与 Android
-        的构建版本发布在 GitHub Releases 上。
-      </p>
+      <div class="terminal reveal">
+        <div class="chrome install-chrome">
+          <span class="install-label" id="install-ps1-label">Windows x64 · PowerShell</span>
+          <button class="copy-command" type="button" data-copy-command="install-ps1" data-copied="已复制" data-failed="请选中并复制命令" aria-describedby="install-ps1-label">复制</button>
+        </div>
+        <pre><code id="install-ps1">powershell -NoProfile -c "irm https://cosyncing.com/install.ps1 | iex"</code></pre>
+      </div>
+      <p class="copy-status" id="copy-status" role="status" aria-live="polite"></p>
+      <div class="install-links reveal">
+        <a href="https://github.com/cosyncing/cosyncing/blob/main/docs/installation/script-install.md">安装指南与仅安装服务端命令</a>
+        <a href="https://github.com/cosyncing/cosyncing#npm">偏好 npm？</a>
+        <a href="https://github.com/cosyncing/cosyncing/blob/main/docs/connectivity/README.md">连接其他设备</a>
+      </div>
+      <p class="lead reveal" style="max-width:680px; margin:26px auto 0">Linux arm64 和无图形界面的 Linux 只安装服务端。在其他设备上使用时，请下载客户端并自行选择私有连接方式。</p>
       <div class="cta-row reveal" style="margin-top:34px">
         <a href="https://github.com/cosyncing/cosyncing/releases/latest" class="btn btn-primary">下载客户端</a>
-        <a href="demo/index.html" class="btn btn-ghost">打开 UI 演示</a>
+        <a href="demo/index.html" class="btn btn-ghost">查看界面演示</a>
       </div>
     </div>
   </section>
@@ -572,10 +583,10 @@
           <span class="lbl">服务端运行于</span>
           <div class="pill-row">
             <span class="pill">macOS · Apple 芯片</span>
-            <span class="pill">Windows（经 WSL）</span>
+            <span class="pill">Windows · x64</span>
             <span class="pill">Linux · x64 与 arm64</span>
           </div>
-          <p>在 Windows 上，请在 WSL 内运行服务端 —— WSL 是受支持的 Linux 宿主机。</p>
+          <p>Windows x64 可原生运行 Broker，WSL 仍受支持。不支持 Windows ARM64 和 Intel macOS。</p>
         </div>
         <div class="panel reveal">
           <span class="lbl">客户端覆盖六个平台</span>
@@ -825,6 +836,21 @@
     });
     document.addEventListener('keydown', function (e) {
       if (e.key === 'Escape') closeMenu(true);
+    });
+  })();
+
+  (function () {
+    document.querySelectorAll('[data-copy-command]').forEach(function (button) {
+      button.addEventListener('click', async function () {
+        var command = document.getElementById(button.dataset.copyCommand).textContent;
+        var status = document.getElementById('copy-status');
+        try {
+          await navigator.clipboard.writeText(command);
+          status.textContent = button.dataset.copied;
+        } catch (error) {
+          status.textContent = button.dataset.failed;
+        }
+      });
     });
   })();
 </script>
