@@ -1,0 +1,5 @@
+# Preserve published installer bytes, including PowerShell BOM and line endings.
+/install.sh -text
+/install-server.sh -text
+/install.ps1 -text
+/install-server.ps1 -text
