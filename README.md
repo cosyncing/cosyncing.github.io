@@ -68,15 +68,19 @@ download URLs, public trust anchors and artifact digests. Merely promoting a new
 GitHub release does not update the website. Never hand-edit these copies or
 substitute an unrendered source template.
 
-After each accepted stable broker promotion, run from this repository root
-(Python 3.9 or newer; no extra packages or signing credentials):
+After each accepted stable broker promotion, start with a clean checkout and
+run from this repository root (Python 3.9 or newer; no extra packages or signing
+credentials). Use a fresh branch name if the example already exists:
 
 ```bash
+git fetch origin
+git switch -c update/stable-installers origin/main
 python3 scripts/sync-installers.py
 git diff -- install.sh install-server.sh install.ps1 install-server.ps1 installers.json
 git add install.sh install-server.sh install.ps1 install-server.ps1 installers.json
 git commit -m "Update stable broker installer mirror"
-git push origin main
+git push -u origin update/stable-installers
+gh pr create --repo cosyncing/cosyncing.github.io --base main --head update/stable-installers
 ```
 
 The helper resolves GitHub's latest release once, requires a stable
@@ -87,10 +91,18 @@ The generated scripts contain public keys by design; private keys do not belong
 in this repository.
 
 Review changes before committing. This repository deploys GitHub Pages from
-`main`; if branch protection requires a PR, merge the reviewed change through
-that PR first. After deployment, check all four short URLs return script text
-matching the promoted release assets, and check `https://cosyncing.com/installers.json`.
+`main`; review and merge the website PR before verifying the deployment. After
+deployment, check all four short URLs return script text matching the promoted
+release assets, and check `https://cosyncing.com/installers.json`.
 During the deployment delay, short URLs still serve the previous mirrored release;
 `https://github.com/cosyncing/cosyncing/releases/latest/download/<name>` is the
 direct fallback. A rollback restores all four scripts and `installers.json`
 together from a reviewed website commit.
+
+## Client download links
+
+Use the [client release listing](https://github.com/cosyncing/cosyncing/releases?q=%22cosyncing%20client%22)
+for standalone Android and desktop downloads. This searches the release
+title phrase `cosyncing client` without pinning a version. Check the latest
+accepted `client-v` release after client promotion. Repository-wide
+`releases/latest` belongs to the broker and does not include every client asset.
