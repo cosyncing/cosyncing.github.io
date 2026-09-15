@@ -3,8 +3,8 @@ set -eu
 
 umask 077
 
-VERSION='0.5.3'
-BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.3'
+VERSION='0.5.4'
+BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.4'
 KEY_ID='cosyncing-release-2026-09-13'
 PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQTIxMi9qTUZHSGVNQTRHRkFOY3F1aHJqeHpOT0EzN1hYcFViWWo0bHVzSTg9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo='
 P256_PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFWWR3Rm14Wk11NFNyTnpJMkFycm9jODNOcWxWVQp1RGR4OUFlR2lsVGlMaWFaMW1haEFzanRqb3hvMjZRTlAybm5JQ3VYcitpSVFyUlFXUlBKOFgrTEZRPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=='
@@ -14,8 +14,8 @@ WEB_ASSET='cosyncing-web-app.tar.gz'
 # The oldest Bun this release's bundle was built and tested against.
 MINIMUM_BUN='1.3.8'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-ARTIFACT_TABLE='cosyncing-app.js 0eb870a8a190094fa1207e0065077c9e96c2fc0dd94cc88140c6c92890f28e2b 1901368
-cosyncing-web-app.tar.gz a59aa7171f906a0e8d2282ef397fa24a94c44b9ca533b9caebc7c4763af213ce 14635274'
+ARTIFACT_TABLE='cosyncing-app.js 62eab912f6c7c04cb300d8783972ceba975e8c9615c7362127cbd680b4281a48 2442345
+cosyncing-web-app.tar.gz af8930a43f1546e3094700a6afa34b3964ad10c259c71022828bc451b4a85470 14641976'
 # Official Bun builds for MINIMUM_BUN, most likely first: "<host> <asset> <sha256>".
 BUN_TABLE='linux-x64 bun-linux-x64.zip 0322b17f0722da76a64298aad498225aedcbf6df1008a1dee45e16ecb226a3f1
 linux-x64 bun-linux-x64-baseline.zip bbe4632ac03d7495177d542ecefa8f21f9849273106525f6bb13172ec8e4ab2c
@@ -34,9 +34,9 @@ BUN_RELEASE_BASE='https://github.com/oven-sh/bun/releases/download'
 INSTALL_MODE='all'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". Rows for hosts this
 # script cannot resolve are inert, exactly like the Bun table's.
-CLIENT_TABLE='linux-x64 cosyncing-client-0.5.3-linux-x64.tar.gz 8131e7df53151a33017eb76455393badde94fb14412db8749609a8a680653c5d 15431606
-macos-arm64 cosyncing-client-0.5.3-macos-arm64-unsigned.zip 0c1e146e6dad0cfeaa8ba33bf622583d38e1ff02912db19eca75fa5c1b12bd4d 28964114
-windows-x64 cosyncing-client-0.5.3-windows-x64-unsigned.zip 84b529769c229ec2214b721175d6a11e263b34648d1d2acdcb4fb19ac0963690 18355870'
+CLIENT_TABLE='linux-x64 cosyncing-client-0.5.4-linux-x64.tar.gz b82c491c0fd19d332208c681c5f3ade584c073e0636c1a6e4c625d7f791adac1 15443761
+macos-arm64 cosyncing-client-0.5.4-macos-arm64-unsigned.zip 4c0e2352ccfa2d925a9db6ad4854c86d48092323e7bb02addcf6127f9d1b28cc 28991794
+windows-x64 cosyncing-client-0.5.4-windows-x64-unsigned.zip 89bfd562693078f3bb9fe3d3c4dbc286f152b4d7f52929598c29d18f282ed414 18368242'
 
 fail() {
   # Mirrors install.ps1: a red marker in front of a plain sentence, and only when stderr is a terminal,
