@@ -3,8 +3,8 @@ set -eu
 
 umask 077
 
-VERSION='0.5.7'
-BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.7'
+VERSION='0.5.8'
+BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.8'
 KEY_ID='cosyncing-release-2026-09-13'
 PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQTIxMi9qTUZHSGVNQTRHRkFOY3F1aHJqeHpOT0EzN1hYcFViWWo0bHVzSTg9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo='
 P256_PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFWWR3Rm14Wk11NFNyTnpJMkFycm9jODNOcWxWVQp1RGR4OUFlR2lsVGlMaWFaMW1haEFzanRqb3hvMjZRTlAybm5JQ3VYcitpSVFyUlFXUlBKOFgrTEZRPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=='
@@ -14,8 +14,8 @@ WEB_ASSET='cosyncing-web-app.tar.gz'
 # The oldest Bun this release's bundle was built and tested against.
 MINIMUM_BUN='1.3.8'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-ARTIFACT_TABLE='cosyncing-app.js 3a23384e341fb5b5d0562bf82ccb65e1b75f86b163bdc8232ae5175da60c4759 2455646
-cosyncing-web-app.tar.gz 89dc442b0d72541d44eca68b441c9ae1e6bd0984dda8d21ba109c4c5453d1e25 14643370'
+ARTIFACT_TABLE='cosyncing-app.js 5fed9aa5f5db2baba9609c3b47450351086f4b76022aa326d518c9fd904afebf 2457784
+cosyncing-web-app.tar.gz ad64a5044dd0215960f8dfb01a21c8005984da7213d53d78c9cbf1f3f004a27d 14648452'
 # Official Bun builds for MINIMUM_BUN, most likely first: "<host> <asset> <sha256>".
 BUN_TABLE='linux-x64 bun-linux-x64.zip 0322b17f0722da76a64298aad498225aedcbf6df1008a1dee45e16ecb226a3f1
 linux-x64 bun-linux-x64-baseline.zip bbe4632ac03d7495177d542ecefa8f21f9849273106525f6bb13172ec8e4ab2c
@@ -34,9 +34,9 @@ BUN_RELEASE_BASE='https://github.com/oven-sh/bun/releases/download'
 INSTALL_MODE='server'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". Rows for hosts this
 # script cannot resolve are inert, exactly like the Bun table's.
-CLIENT_TABLE='linux-x64 cosyncing-client-0.5.7-linux-x64.tar.gz 1f50a066ada2fbb40eeae405f52426e2465eea009154733f368739409c64be57 15450002
-macos-arm64 cosyncing-client-0.5.7-macos-arm64-unsigned.zip c2f5d77a246a8d81d6853c42992925f7c9955dddbf6ff31bf4f4ec64e26db5b7 28998802
-windows-x64 cosyncing-client-0.5.7-windows-x64-unsigned.zip c1104d839e934881c02613f7158912158cc1156d34511eff7290201ab104560b 18369667'
+CLIENT_TABLE='linux-x64 cosyncing-client-0.5.8-linux-x64.tar.gz 75faef1b8b0555651cf9eba919d42542cd01303fd2aeca975eebc8e9d9fd1398 15449144
+macos-arm64 cosyncing-client-0.5.8-macos-arm64-unsigned.zip a07fa370cba1a57f4d7a0e0b5fe2e4c27b056ddb2accfa66fa2d9e0ae4cdaf10 28993187
+windows-x64 cosyncing-client-0.5.8-windows-x64-unsigned.zip 0e5ba2518790f54eb427621a7f2187910c69894bb7c3865affafc9032df7e1de 18374397'
 
 fail() {
   # Mirrors install.ps1: a red marker in front of a plain sentence, and only when stderr is a terminal,
@@ -677,6 +677,37 @@ adopt_npm_application() {
   ADOPTED_NPM_INSTALL=1
 }
 
+# A bootstrap-js self-upgrade updates the setup transaction's binary receipt. Releases predating the
+# bootstrap-receipt synchronization fix could leave this installer's narrower receipt naming the previous
+# application bytes. Accept that historical state only when the owner-only setup receipt independently
+# proves the exact current file; every other mismatch remains a hard refusal.
+setup_receipt_owns_application() {
+  install_state="$STATE_HOME/install-state.json"
+  [ -f "$install_state" ] && [ ! -L "$install_state" ] || return 1
+  [ "$(stat_owner "$install_state")" = "$(id -u)" ] || return 1
+  mode="$(stat_mode "$install_state")"
+  [ $(( 0$mode & 077 )) -eq 0 ] || return 1
+  actual_sha="$(sha256_of "$APPLICATION")" || return 1
+  "$BUN_BIN" -e '
+    import { readFileSync } from "node:fs";
+    import { resolve } from "node:path";
+    const [statePath, application, actualSha] = Bun.argv.slice(1);
+    try {
+      const state = JSON.parse(readFileSync(statePath, "utf8"));
+      const records = Array.isArray(state.resources)
+        ? state.resources.filter((item) => item?.id === "broker-binary") : [];
+      const record = records[0];
+      const owned = state.schemaVersion === 1 && state.product === "cosyncing"
+        && state.setup?.status === "committed" && records.length === 1
+        && record?.kind === "binary" && resolve(record.target) === resolve(application)
+        && ["package-hash", "receipt"].includes(record.ownership?.proof)
+        && /^[0-9a-f]{64}$/.test(record.ownership?.installedSha256 ?? "")
+        && record.ownership.installedSha256 === actualSha;
+      process.exit(owned ? 0 : 1);
+    } catch { process.exit(1); }
+  ' "$install_state" "$APPLICATION" "$actual_sha" >/dev/null 2>&1
+}
+
 ensure_owned_directory() {
   path="$1"
   if [ -e "$path" ] || [ -L "$path" ]; then
@@ -718,8 +749,10 @@ if [ -e "$APPLICATION" ] || [ -L "$APPLICATION" ]; then
     grep -Fxq "application=$APPLICATION" "$RECEIPT" || fail 'existing bootstrap receipt names another application'
     PRIOR="$(sed -n 's/^sha256=//p' "$RECEIPT")"
     [ "${#PRIOR}" -eq 64 ] || fail 'existing bootstrap receipt checksum is invalid'
-    [ "$(sha256_of "$APPLICATION")" = "$PRIOR" ] \
-      || fail 'existing application differs from its bootstrap ownership receipt'
+    if [ "$(sha256_of "$APPLICATION")" != "$PRIOR" ]; then
+      setup_receipt_owns_application \
+        || fail 'existing application differs from its bootstrap ownership receipt'
+    fi
   fi
 fi
 
