@@ -25,8 +25,8 @@ $ProgressPreference = 'SilentlyContinue'
 # release host requires TLS 1.2. The shell installer states the same floor with `--tlsv1.2`.
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$VERSION = '0.5.7'
-$BASE_URL = 'https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.7'
+$VERSION = '0.5.8'
+$BASE_URL = 'https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.8'
 $KEY_ID = 'cosyncing-release-2026-09-13'
 # Only the P-256 key is embedded. The Ed25519 sibling is deliberately absent: Windows CNG exposes no
 # Ed25519 algorithm identifier and .NET Framework has no implementation, so carrying that key would ship a
@@ -38,8 +38,8 @@ $WEB_ASSET = 'cosyncing-web-app.tar.gz'
 # The oldest Bun this release's bundle was built and tested against.
 $MINIMUM_BUN = '1.3.8'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-$ARTIFACT_TABLE = 'cosyncing-app.js 3a23384e341fb5b5d0562bf82ccb65e1b75f86b163bdc8232ae5175da60c4759 2455646
-cosyncing-web-app.tar.gz 89dc442b0d72541d44eca68b441c9ae1e6bd0984dda8d21ba109c4c5453d1e25 14643370'
+$ARTIFACT_TABLE = 'cosyncing-app.js 5fed9aa5f5db2baba9609c3b47450351086f4b76022aa326d518c9fd904afebf 2457784
+cosyncing-web-app.tar.gz ad64a5044dd0215960f8dfb01a21c8005984da7213d53d78c9cbf1f3f004a27d 14648452'
 # Official Bun builds for MINIMUM_BUN, most likely first: "<host> <asset> <sha256>". One table serves both
 # installers, so rows for hosts this script cannot run on are present and inert.
 $BUN_TABLE = 'linux-x64 bun-linux-x64.zip 0322b17f0722da76a64298aad498225aedcbf6df1008a1dee45e16ecb226a3f1
@@ -59,9 +59,9 @@ $BUN_RELEASE_BASE = 'https://github.com/oven-sh/bun/releases/download'
 $INSTALL_MODE = 'all'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". One table serves all
 # four installers, so rows for hosts this script cannot run on are present and inert.
-$CLIENT_TABLE = 'linux-x64 cosyncing-client-0.5.7-linux-x64.tar.gz 1f50a066ada2fbb40eeae405f52426e2465eea009154733f368739409c64be57 15450002
-macos-arm64 cosyncing-client-0.5.7-macos-arm64-unsigned.zip c2f5d77a246a8d81d6853c42992925f7c9955dddbf6ff31bf4f4ec64e26db5b7 28998802
-windows-x64 cosyncing-client-0.5.7-windows-x64-unsigned.zip c1104d839e934881c02613f7158912158cc1156d34511eff7290201ab104560b 18369667'
+$CLIENT_TABLE = 'linux-x64 cosyncing-client-0.5.8-linux-x64.tar.gz 75faef1b8b0555651cf9eba919d42542cd01303fd2aeca975eebc8e9d9fd1398 15449144
+macos-arm64 cosyncing-client-0.5.8-macos-arm64-unsigned.zip a07fa370cba1a57f4d7a0e0b5fe2e4c27b056ddb2accfa66fa2d9e0ae4cdaf10 28993187
+windows-x64 cosyncing-client-0.5.8-windows-x64-unsigned.zip 0e5ba2518790f54eb427621a7f2187910c69894bb7c3865affafc9032df7e1de 18374397'
 
 # The one host this installer supports. Windows ARM64 and an x64 process emulated on ARM64 are refused
 # below, so there is nothing to select between.
@@ -1219,7 +1219,36 @@ try {
         Fail 'existing bootstrap receipt checksum is invalid'
       }
       if ((Get-Sha256 -Path $application) -ne $prior[0]) {
-        Fail 'existing application differs from its bootstrap ownership receipt'
+        $installStatePath = Join-Path $stateHome 'install-state.json'
+        $setupOwnsApplication = $false
+        if (Test-Path -LiteralPath $installStatePath -PathType Leaf) {
+          $installStateItem = Get-Item -LiteralPath $installStatePath -Force
+          if ((-not (Test-ReparsePoint -Item $installStateItem)) -and
+              (Get-PathOwnerSid -Path $installStatePath) -eq $CURRENT_USER_SID) {
+            try {
+              $installState = [IO.File]::ReadAllText($installStatePath) | ConvertFrom-Json
+              $binaryReceipts = @($installState.resources | Where-Object { $_.id -ceq 'broker-binary' })
+              $binaryReceipt = if ($binaryReceipts.Count -eq 1) { $binaryReceipts[0] } else { $null }
+              $receiptTarget = if ($binaryReceipt) {
+                [IO.Path]::GetFullPath([string]$binaryReceipt.target)
+              } else { '' }
+              $setupOwnsApplication = $installState.schemaVersion -eq 1 -and
+                $installState.product -ceq 'cosyncing' -and
+                $installState.setup.status -ceq 'committed' -and
+                $binaryReceipt.kind -ceq 'binary' -and
+                [string]::Equals($receiptTarget, [IO.Path]::GetFullPath($application),
+                  [StringComparison]::OrdinalIgnoreCase) -and
+                @('package-hash', 'receipt') -ccontains $binaryReceipt.ownership.proof -and
+                $binaryReceipt.ownership.installedSha256 -cmatch '^[0-9a-f]{64}$' -and
+                (Get-Sha256 -Path $application) -ceq $binaryReceipt.ownership.installedSha256
+            } catch {
+              $setupOwnsApplication = $false
+            }
+          }
+        }
+        if (-not $setupOwnsApplication) {
+          Fail 'existing application differs from its bootstrap ownership receipt'
+        }
       }
     }
   }
