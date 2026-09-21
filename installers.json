@@ -1,10 +1,10 @@
 {
-  "release": "broker-v0.5.9",
-  "source": "https://github.com/cosyncing/cosyncing/releases/tag/broker-v0.5.9",
+  "release": "broker-v0.5.11",
+  "source": "https://github.com/cosyncing/cosyncing/releases/tag/broker-v0.5.11",
   "installers": {
-    "install.sh": "https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.9/install.sh",
-    "install-server.sh": "https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.9/install-server.sh",
-    "install.ps1": "https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.9/install.ps1",
-    "install-server.ps1": "https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.9/install-server.ps1"
+    "install.sh": "https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.11/install.sh",
+    "install-server.sh": "https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.11/install-server.sh",
+    "install.ps1": "https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.11/install.ps1",
+    "install-server.ps1": "https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.11/install-server.ps1"
   }
 }

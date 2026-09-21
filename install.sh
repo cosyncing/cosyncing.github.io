@@ -3,8 +3,8 @@ set -eu
 
 umask 077
 
-VERSION='0.5.9'
-BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.9'
+VERSION='0.5.11'
+BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.11'
 KEY_ID='cosyncing-release-2026-09-13'
 PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQTIxMi9qTUZHSGVNQTRHRkFOY3F1aHJqeHpOT0EzN1hYcFViWWo0bHVzSTg9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo='
 P256_PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFWWR3Rm14Wk11NFNyTnpJMkFycm9jODNOcWxWVQp1RGR4OUFlR2lsVGlMaWFaMW1haEFzanRqb3hvMjZRTlAybm5JQ3VYcitpSVFyUlFXUlBKOFgrTEZRPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=='
@@ -14,8 +14,8 @@ WEB_ASSET='cosyncing-web-app.tar.gz'
 # The oldest Bun this release's bundle was built and tested against.
 MINIMUM_BUN='1.3.8'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-ARTIFACT_TABLE='cosyncing-app.js 43ea408710f57d3decd666229305145e301ae593a24891cbda8d35f2c005631f 2458996
-cosyncing-web-app.tar.gz 831c93ef40cddca3e01d3928c394392b1a513c8988f41a0d36ed614fc67ac541 14655459'
+ARTIFACT_TABLE='cosyncing-app.js 0483d5ecd418914ab520448d51af48642df2bd62b56b3f0f784de2011bdaa974 2472986
+cosyncing-web-app.tar.gz 1884f80a78aa00fcb81bffebfca89ea596ccef674df0ea66022cab552efa9374 14659492'
 # Official Bun builds for MINIMUM_BUN, most likely first: "<host> <asset> <sha256>".
 BUN_TABLE='linux-x64 bun-linux-x64.zip 0322b17f0722da76a64298aad498225aedcbf6df1008a1dee45e16ecb226a3f1
 linux-x64 bun-linux-x64-baseline.zip bbe4632ac03d7495177d542ecefa8f21f9849273106525f6bb13172ec8e4ab2c
@@ -34,9 +34,9 @@ BUN_RELEASE_BASE='https://github.com/oven-sh/bun/releases/download'
 INSTALL_MODE='all'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". Rows for hosts this
 # script cannot resolve are inert, exactly like the Bun table's.
-CLIENT_TABLE='linux-x64 cosyncing-client-0.5.9-linux-x64.tar.gz 515d2b66ce15fba1322884945e0698981773bfdf9660481fcbf7bc13464f4b3a 15473360
-macos-arm64 cosyncing-client-0.5.9-macos-arm64-unsigned.zip 5d99e6dd89dd0fe421687dd9efca78095164455f9e4c7a3fba3f2f01414916e2 29054464
-windows-x64 cosyncing-client-0.5.9-windows-x64-unsigned.zip 43612725ef62aafd19600939e62c5dc7bcba4455e2e26745907ac095d9d6e54d 18395047'
+CLIENT_TABLE='linux-x64 cosyncing-client-0.5.11-linux-x64.tar.gz 9ec9a89f37feabae0efe125f8a48fda2e18a82551bf5efb5510d42b9ceec5d4d 15488369
+macos-arm64 cosyncing-client-0.5.11-macos-arm64-unsigned.zip f0a6dba7c51273a40e8254b1857d90fe67a8133acf86e8c9561588a5da19d735 29091540
+windows-x64 cosyncing-client-0.5.11-windows-x64-unsigned.zip 62ffbc1cb5018e191665efe34922cfe22acdae5ae217c3d006b94cc173545c61 18466322'
 
 fail() {
   # Mirrors install.ps1: a red marker in front of a plain sentence, and only when stderr is a terminal,
@@ -1086,14 +1086,37 @@ for SUPERSEDED in "$INSTALL_DIR"/cosyncing-web-*; do
   fi
 done
 
+# Stop an open desktop client before publishing a one-use offer. A client from
+# this release watches the inbox while running; publishing first would let it
+# claim the offer and then receive SIGTERM between acceptance and persistence.
+# Never escalate to SIGKILL. If the process does not exit, leave it untouched
+# from here onward and publish the offer for its watcher or a manual reopen.
+if [ -z "$CLIENT_SKIP" ] && [ -n "$CLIENT_RUNNING" ]; then
+  if command -v pkill >/dev/null 2>&1 \
+    && pkill -TERM -f "$CLIENT_LAUNCH" >/dev/null 2>&1
+  then
+    CLIENT_STOP_WAIT=0
+    while pgrep -f "$CLIENT_LAUNCH" >/dev/null 2>&1 \
+      && [ "$CLIENT_STOP_WAIT" -lt 5 ]
+    do
+      sleep 1
+      CLIENT_STOP_WAIT=$((CLIENT_STOP_WAIT + 1))
+    done
+    if ! pgrep -f "$CLIENT_LAUNCH" >/dev/null 2>&1; then
+      CLIENT_RUNNING=''
+      printf 'Desktop client: closed the previous version and will restart %s.\n' "$VERSION"
+    fi
+  fi
+fi
+
 # ---------------------------------------------------------------------------------------------------
 # The pairing handoff.
 #
-# The client reads $COSYNCING_HOME/client-pairing.json once at startup, imports it, and deletes it — so
-# the first launch after an all-in-one install is already paired with the broker beside it instead of
-# asking a user to retype a QR payload from one window into another. The offer is one-use and expires in
-# five minutes, exactly as `pair` prints it, so a file left behind by a client that never started is a
-# dead offer rather than a standing credential.
+# The client reads $COSYNCING_HOME/client-pairing.json at startup and watches for a new handoff while it
+# remains open. It imports and deletes the offer, so an all-in-one install is already paired with the
+# broker beside it instead of asking a user to retype a QR payload from one window into another. The
+# offer is one-use and expires in five minutes, exactly as `pair` prints it, so a file left behind by a
+# client that never started is a dead offer rather than a standing credential.
 #
 # Parsed with the Bun this install just resolved rather than with awk: it is already a hard dependency of
 # the thing being installed, and a JSON reader assembled from line matching would be the least trustworthy
@@ -1133,11 +1156,6 @@ if [ -n "$CLIENT_SKIP" ]; then
   # No client on this host, so no offer is created. Writing one would burn a one-use pairing that expires
   # in five minutes and that nothing here can redeem, and leave it on disk looking like a credential.
   printf 'Pairing handoff: not needed, no desktop client was installed. Pair another device with:\n  %s pair\n' \
-    "$APPLICATION"
-elif [ -n "$CLIENT_RUNNING" ]; then
-  # The same rule as the no-client case: an offer only a startup reads, written for a client that is not
-  # going to start, is a one-use credential on disk that nothing can redeem and that expires unattended.
-  printf 'Pairing handoff: not written — the desktop client is already running and reads an offer only at\nstartup. Quit and reopen it, then pair with:\n  %s pair\n' \
     "$APPLICATION"
 elif ! ensure_handoff_home; then
   handoff_failed "the client's own home could not be created at $HANDOFF_HOME"
@@ -1184,7 +1202,7 @@ fi
 
 if [ -z "$CLIENT_SKIP" ]; then
   if [ -n "$CLIENT_RUNNING" ]; then
-    printf 'Desktop client: it was already running, so the window on screen is still the previous version.\nQuit and reopen %s to use %s.\n' \
+    printf 'Desktop client: could not close the previous version safely. Quit and reopen %s within five minutes to finish pairing and use %s.\n' \
       "$CLIENT_LAUNCH" "$VERSION"
   elif [ -n "$CLIENT_CONTAINER" ]; then
     # Deliberately WITHOUT --env. COSYNCING_HOME is the only thing this client reads that variable for,
