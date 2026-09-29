@@ -3,8 +3,8 @@ set -eu
 
 umask 077
 
-VERSION='0.5.13'
-BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.5.13'
+VERSION='0.6.0'
+BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.6.0'
 KEY_ID='cosyncing-release-2026-09-13'
 PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQTIxMi9qTUZHSGVNQTRHRkFOY3F1aHJqeHpOT0EzN1hYcFViWWo0bHVzSTg9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo='
 P256_PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFWWR3Rm14Wk11NFNyTnpJMkFycm9jODNOcWxWVQp1RGR4OUFlR2lsVGlMaWFaMW1haEFzanRqb3hvMjZRTlAybm5JQ3VYcitpSVFyUlFXUlBKOFgrTEZRPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=='
@@ -14,8 +14,8 @@ WEB_ASSET='cosyncing-web-app.tar.gz'
 # The oldest Bun this release's bundle was built and tested against.
 MINIMUM_BUN='1.3.8'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-ARTIFACT_TABLE='cosyncing-app.js 94a8fe20ae5bcc76f5c9d9e7a8c997f7e98eea47b1511f2b89de6452d9ed942f 2491123
-cosyncing-web-app.tar.gz 3a0c09bf57f4bad2c38a49095ffa12d585abe185b7e21c3b18b28409ab6a52e6 14660531'
+ARTIFACT_TABLE='cosyncing-app.js a1519b944baeb1e8b351965d9d2a757b1191cf7f773b334f6241eb58a9f51f81 2565988
+cosyncing-web-app.tar.gz 51b3d95438e58f44001ae107a57623d0db6a984d776f301517f9740533b2b5df 16159985'
 # Official Bun builds for MINIMUM_BUN, most likely first: "<host> <asset> <sha256>".
 BUN_TABLE='linux-x64 bun-linux-x64.zip 0322b17f0722da76a64298aad498225aedcbf6df1008a1dee45e16ecb226a3f1
 linux-x64 bun-linux-x64-baseline.zip bbe4632ac03d7495177d542ecefa8f21f9849273106525f6bb13172ec8e4ab2c
@@ -34,9 +34,9 @@ BUN_RELEASE_BASE='https://github.com/oven-sh/bun/releases/download'
 INSTALL_MODE='server'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". Rows for hosts this
 # script cannot resolve are inert, exactly like the Bun table's.
-CLIENT_TABLE='linux-x64 cosyncing-client-0.5.13-linux-x64.tar.gz edf275f4a54a377a19f03b087c56cf857474e9dfc98692731239e4a017943563 15495565
-macos-arm64 cosyncing-client-0.5.13-macos-arm64-unsigned.zip 437b812601a0a671efc9ecea7f8db9296f54f3c85b19f696c5ee13509a8ab236 29106818
-windows-x64 cosyncing-client-0.5.13-windows-x64-unsigned.zip 161c260ba794e7d2c6f63ae0d3446a69db7c7d8252305965be57078f8e465774 18470439'
+CLIENT_TABLE='linux-x64 cosyncing-client-0.6.0-linux-x64.tar.gz bbc4b52cac1c0fab370225691ba2a00b644347ef590a777b1a9f662cebaa7907 17165585
+macos-arm64 cosyncing-client-0.6.0-macos-arm64-unsigned.zip 3e351db717215e1a8981a516b20ef19b4f5546209f0ee6ab537f5d4aba1b7531 31029134
+windows-x64 cosyncing-client-0.6.0-windows-x64-unsigned.zip 9e2baeb474ad16f99f7ed69f00fee056b3ddbc935187d33fc7d2fc9eb74cfe64 20247012'
 
 fail() {
   # Mirrors install.ps1: a red marker in front of a plain sentence, and only when stderr is a terminal,
@@ -809,7 +809,7 @@ fi
 [ -L "$ALIAS" ] || ln -s 'cosyncing' "$ALIAS"
 register_shell_commands
 
-installer_message "Installed cosyncing $VERSION at $APPLICATION" "已安装 cosyncing $VERSION：$APPLICATION"
+installer_message "Installed cosyncing $VERSION at $APPLICATION" "已安装 cosyncing ${VERSION}：$APPLICATION"
 installer_message "Web client: $WEB_ROOT" "网页客户端：$WEB_ROOT"
 printf 'Bun runtime: %s\n' "$BUN_STATE"
 printf 'Artifact digests: matched the sha256 values embedded in this installer.\n'
@@ -1130,8 +1130,45 @@ if [ -n "$CLIENT_CONTAINER" ]; then
   HANDOFF_HOME="$CLIENT_CONTAINER/.cosyncing"
 fi
 PAIRING_FILE="$HANDOFF_HOME/client-pairing.json"
-handoff_failed() {
+# How long to wait, after the client has been started, for the broker to report the offer redeemed.
+HANDOFF_CONFIRM_SECONDS=20
+HANDOFF_LOG="$STATE_HOME/logs/pairing-handoff.log"
+PAIRING_ID=''
+# One bounded line per handoff step, in the state home, so "what did the installer see" is still answerable
+# after the terminal is closed. $WORK is deleted by the exit trap, which is precisely where a log meant to
+# outlive the run must not go.
+#
+# Only the step name, the exit code, and the CLI's own detail code are recorded, and they are passed as
+# arguments the caller has already reduced to those three things. The pairing QR is a one-use credential and
+# the broker token is a credential, so no stdout capture is ever appended here.
+handoff_log() {
+  mkdir -p "${HANDOFF_LOG%/*}" 2>/dev/null || return 0
+  chmod 700 "${HANDOFF_LOG%/*}" 2>/dev/null || true
+  printf '%s step=%s exit=%s detail=%s\n' \
+    "$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || printf unknown)" "$1" "$2" "$3" \
+    >> "$HANDOFF_LOG" 2>/dev/null || true
+  chmod 600 "$HANDOFF_LOG" 2>/dev/null || true
+  return 0
+}
+# The CLI states its own reason on stderr as "[error] <detail-code>: <message>". Take the code and nothing
+# else, so a bounded reason outlives the run without carrying a URL, a query, a credential, or an offer.
+handoff_error_detail() {
+  "$BUN_BIN" -e '
+    const text = await Bun.file(process.argv[1]).text();
+    const line = text.split("\n").find((entry) => entry.startsWith("[error] ")) ?? "";
+    const code = line.slice(8).split(":")[0].trim();
+    console.log(/^[A-Za-z0-9_.-]{1,64}$/.test(code) ? code : "no-detail-code");
+  ' "$1" 2>/dev/null || printf 'unreadable'
+}
+# The operator's one line about a handoff that did not happen. $2 is the detail CODE and not the sentence,
+# because a line the operator greps has to carry the token the CLI actually printed while the sentence stays
+# the thing they read. handoff_announce is for the steps already on the record, so nothing logs twice.
+handoff_announce() {
   printf 'Pairing handoff: skipped — %s. Pair by hand with:\n  %s pair\n' "$1" "$APPLICATION"
+}
+handoff_failed() {
+  handoff_announce "$1"
+  handoff_log "${HANDOFF_STEP:-handoff}" 1 "$2"
 }
 
 # The state home always exists by here. A container may not: macOS creates one at the application's first
@@ -1152,52 +1189,171 @@ ensure_handoff_home() {
   return 0
 }
 
+# Is this broker answering as itself on its own loopback port? Sets LISTENER_URL, or HANDOFF_REASON.
+#
+# `status --readiness` is deliberately not the full `status --json`. The full report also reads the session
+# roster, and on a broker whose 4s roster TTL has lapsed — which is nearly always — that read opens a
+# whole-roster sweep, so the probe made the broker busier while asking it whether it was busy. It also
+# sampled the endpoint exactly once, and one stall was one skipped handoff: measured on an installed broker
+# with ~4,900 sessions, the health route takes 6-8s about once a minute during discovery, and the first
+# sweep after a service start took 22.6s. Readiness waits, and asks nothing else.
+broker_ready_for_handoff() {
+  LISTENER_URL=''
+  HANDOFF_REASON=''
+  HANDOFF_STEP='readiness'
+  if "$BUN_BIN" "$APPLICATION" status --json --readiness \
+      > "$WORK/readiness.json" 2> "$WORK/readiness.err"
+  then
+    READINESS_EXIT=0
+  else
+    READINESS_EXIT=1
+  fi
+  # The CLI's own detail code, not an inference from an exit status. "Nothing answered" and "something else
+  # answered" need different sentences, and only the first is worth waiting out again.
+  HANDOFF_DETAIL="$("$BUN_BIN" -e '
+    const report = JSON.parse(await Bun.file(process.argv[1]).text());
+    console.log((report?.detailCodes ?? []).join(",") || (report?.ok === true ? "ready" : "not-ready"));
+  ' "$WORK/readiness.json" 2>/dev/null || printf 'unreadable')"
+  handoff_log readiness "$READINESS_EXIT" "$HANDOFF_DETAIL"
+  LISTENER_URL="$("$BUN_BIN" -e '
+    const report = JSON.parse(await Bun.file(process.argv[1]).text());
+    const url = report?.listener?.url;
+    if (report?.product !== "cosyncing" || report?.listener?.ready !== true || typeof url !== "string") process.exit(1);
+    const parsed = new URL(url);
+    if (parsed.protocol !== "http:" || parsed.hostname !== "127.0.0.1" || parsed.username || parsed.password) process.exit(1);
+    console.log(url);
+  ' "$WORK/readiness.json" 2>/dev/null || true)"
+  [ -n "$LISTENER_URL" ] && return 0
+  case ",$HANDOFF_DETAIL," in
+    *,internal-endpoint-identity-mismatch,*)
+      HANDOFF_REASON='the local endpoint answered as something other than this broker'
+      ;;
+    *,internal-endpoint-unauthenticated,*)
+      # A cosyncing endpoint that answered WITHOUT authenticating this installation's token. Not the case
+      # above -- that responder named a different product -- and not proof of local ownership either:
+      # `machine` is withheld from every caller the responder will not authenticate, so another cosyncing
+      # broker answers identically to a token it does not recognise, and one reached over a WSL port relay,
+      # in a second container, or behind a second state home on a shared port looks exactly like this.
+      # So the sentence belongs to the endpoint that answered, and the hint points at the listener rather
+      # than at setup: rewriting this token repairs our own broker and nothing anybody else's.
+      HANDOFF_PORT="$("$BUN_BIN" -e '
+        const report = JSON.parse(await Bun.file(process.argv[1]).text());
+        const port = report?.listener?.port;
+        console.log(Number.isInteger(port) && port > 0 ? String(port) : "");
+      ' "$WORK/readiness.json" 2>/dev/null || true)"
+      # Named per host: the operator is being handed a command to run, and `ss` is not on macOS.
+      if [ "$OS" = Darwin ]; then
+        HANDOFF_PROBE='lsof -nP -iTCP -sTCP:LISTEN'
+        [ -z "$HANDOFF_PORT" ] || HANDOFF_PROBE="lsof -nP -iTCP:$HANDOFF_PORT -sTCP:LISTEN"
+      else
+        HANDOFF_PROBE='ss -ltnp'
+        [ -z "$HANDOFF_PORT" ] || HANDOFF_PROBE="ss -ltnp | grep :$HANDOFF_PORT"
+      fi
+      # The port when the report carried one, the configured port in words when it did not, so the sentence
+      # reads the same either way. Built in pieces because the operator gets one line.
+      HANDOFF_WHERE="on port $HANDOFF_PORT"
+      [ -n "$HANDOFF_PORT" ] || HANDOFF_WHERE='on the configured port'
+      HANDOFF_REASON="a cosyncing endpoint $HANDOFF_WHERE did not accept this installation's credential"
+      HANDOFF_REASON="$HANDOFF_REASON (find out what owns it: $HANDOFF_PROBE)"
+      ;;
+    *)
+      HANDOFF_REASON="the local listener did not report ready (detail: $HANDOFF_DETAIL)"
+      ;;
+  esac
+  return 1
+}
+
 if [ -n "$CLIENT_SKIP" ]; then
   # No client on this host, so no offer is created. Writing one would burn a one-use pairing that expires
   # in five minutes and that nothing here can redeem, and leave it on disk looking like a credential.
   printf 'Pairing handoff: not needed, no desktop client was installed. Pair another device with:\n  %s pair\n' \
     "$APPLICATION"
 elif ! ensure_handoff_home; then
-  handoff_failed "the client's own home could not be created at $HANDOFF_HOME"
-# status also checks agents and the service manager. Its exit code can be nonzero
-# while the listener is ready; pair independently verifies identity and owner auth.
-elif ( "$BUN_BIN" "$APPLICATION" status --json > "$WORK/status.json" 2>/dev/null || true ) \
-  && LISTENER_URL="$("$BUN_BIN" -e '
-    const status = JSON.parse(await Bun.file(process.argv[1]).text());
-    const url = status?.listener?.url;
-    if (status?.product !== "cosyncing" || status?.listener?.ready !== true || typeof url !== "string") process.exit(1);
-    const parsed = new URL(url);
-    if (parsed.protocol !== "http:" || parsed.hostname !== "127.0.0.1" || parsed.username || parsed.password) process.exit(1);
-    console.log(url);
-  ' "$WORK/status.json" 2>/dev/null)" \
-  && [ -n "$LISTENER_URL" ]
-then
-  if "$BUN_BIN" "$APPLICATION" pair --json --broker-url "$LISTENER_URL" > "$WORK/pairing.json" 2>/dev/null
+  handoff_failed "the client's own home could not be created at $HANDOFF_HOME" 'handoff-home-unwritable'
+elif ! broker_ready_for_handoff; then
+  # The readiness step wrote its own line, with the CLI's detail code, before returning.
+  handoff_announce "${HANDOFF_REASON:-the local listener did not report ready}"
+else
+  # stderr goes to a file in $WORK and is reduced to its detail code, never printed. The same command's
+  # stdout carries the one-use QR, and this script is usually the tail of a pipe into a terminal.
+  if "$BUN_BIN" "$APPLICATION" pair --json --broker-url "$LISTENER_URL" \
+      > "$WORK/pairing.json" 2> "$WORK/pairing.err"
   then
-    STAGED_PAIRING="$(mktemp "$HANDOFF_HOME/.client-pairing.XXXXXXXX")"
-    if "$BUN_BIN" -e '
-      const offer = JSON.parse(await Bun.file(process.argv[1]).text());
-      const { qr, brokerUrl, expiresAt } = offer ?? {};
-      if (typeof qr !== "string" || typeof brokerUrl !== "string" || typeof expiresAt !== "string") {
-        process.exit(1);
+    HANDOFF_STEP='offer'
+    # The staging path is created before the reply is read and OUTSIDE the failure handling below, so this
+    # is the one command in the step whose failure could still end the installer on the spot: under
+    # `set -eu` a bare failed assignment exits with no handoff line and no reason, which is exactly the
+    # record the step promises. Folding the failure into the variable keeps it inside the step that knows
+    # the failure's name, and an empty path stops the publish attempt rather than handing an empty argument
+    # to the writer, to chmod, or to mv.
+    STAGED_PAIRING="$(mktemp "$HANDOFF_HOME/.client-pairing.XXXXXXXX" 2>/dev/null)" || STAGED_PAIRING=''
+    # The whole reply is validated BEFORE any of it is written, and the step is logged only once the file has
+    # landed. It used to answer for itself off the command's exit status alone: `exit=0 detail=created` went
+    # on the record before the pairing id had been read and before the file existed, so a broker that answered
+    # 200 with something unusable left a log line saying "created" above a handoff that never happened, and
+    # then the acceptance step below skipped itself without saying anything at all.
+    #
+    # Success prints the pairing id and stages the file; failure prints the reason code and leaves nothing
+    # behind. The id is never logged -- it names an offer that is live for five minutes -- and it is validated
+    # here rather than trusted, because it is what the acceptance step asks the broker about.
+    OFFER_REPLY="$("$BUN_BIN" -e '
+      const [reply, staged] = process.argv.slice(1);
+      const refuse = (code) => { console.log(code); process.exit(1); };
+      // Asked to publish into nothing: a fault of this script rather than of the broker, so it is named
+      // before the reply is even read. An offer nobody can write down is still no handoff.
+      if (typeof staged !== "string" || staged.length === 0) refuse("offer-file-unwritable");
+      let offer;
+      try { offer = JSON.parse(await Bun.file(reply).text()); } catch { refuse("offer-reply-unreadable"); }
+      const { pairingId, qr, brokerUrl, expiresAt } = offer ?? {};
+      if (typeof pairingId !== "string" || !/^pair_[A-Za-z0-9_-]{20,32}$/.test(pairingId)) {
+        refuse("offer-reply-invalid");
       }
-      await Bun.write(process.argv[2], `${JSON.stringify({ schemaVersion: 1, qr, brokerUrl, expiresAt }, null, 2)}\n`);
-    ' "$WORK/pairing.json" "$STAGED_PAIRING" 2>/dev/null
+      if (![qr, brokerUrl, expiresAt].every((value) => typeof value === "string" && value.length > 0)) {
+        refuse("offer-reply-invalid");
+      }
+      if (!Number.isFinite(Date.parse(expiresAt))) refuse("offer-reply-invalid");
+      try {
+        const body = JSON.stringify({ schemaVersion: 1, qr, brokerUrl, expiresAt }, null, 2);
+        await Bun.write(staged, `${body}\n`);
+      } catch { refuse("offer-file-unwritable"); }
+      console.log(pairingId);
+    ' "$WORK/pairing.json" "$STAGED_PAIRING" 2>/dev/null)" \
+      && OFFER_REPLY_EXIT=0 || OFFER_REPLY_EXIT=1
+    if [ "$OFFER_REPLY_EXIT" -eq 0 ] && chmod 600 "$STAGED_PAIRING" && mv "$STAGED_PAIRING" "$PAIRING_FILE"
     then
-      chmod 600 "$STAGED_PAIRING"
-      mv "$STAGED_PAIRING" "$PAIRING_FILE"
+      # Kept only now. This is what the confirmation step below asks the broker about, and asking is only
+      # worth doing once there is an offer on disk that the client can read.
+      PAIRING_ID="$OFFER_REPLY"
       STAGED_PAIRING=''
+      handoff_log offer 0 created
       printf 'Pairing handoff: %s (one-use, expires in five minutes)\n' "$PAIRING_FILE"
     else
-      rm -f "$STAGED_PAIRING"
+      # One outcome per step, and this is the only one the step writes. A pairing id that failed the shape
+      # test, a reply that was not JSON at all, and a reply that could not be staged are three different
+      # faults, and all three used to leave the installer with a handoff it did not have and nothing on the
+      # record to say so.
+      case "$OFFER_REPLY" in
+        offer-*) OFFER_DETAIL="$OFFER_REPLY" ;;
+        # The reply was usable and the staged file was not: there is nothing here for the client to read.
+        *) OFFER_DETAIL='offer-file-unwritable' ;;
+      esac
+      [ -z "$STAGED_PAIRING" ] || rm -f "$STAGED_PAIRING"
       STAGED_PAIRING=''
-      handoff_failed 'the pairing offer could not be read'
+      handoff_failed "the pairing offer could not be published (detail: $OFFER_DETAIL)" "$OFFER_DETAIL"
     fi
   else
-    handoff_failed 'the broker did not issue a pairing offer'
+    HANDOFF_STEP='offer'
+    OFFER_DETAIL="$(handoff_error_detail "$WORK/pairing.err")"
+    if [ "$OFFER_DETAIL" = 'pairing-create-unverified' ]; then
+      # The POST may have reached the broker. Its answer was lost, so there is no offer file for this client,
+      # but saying "no offer" and inviting another POST immediately would claim more than we know.
+      printf 'Pairing handoff: unverified — the broker did not answer the offer request. No handoff file was written. An unused offer may exist; wait five minutes before creating another with:\n  %s pair\n' \
+        "$APPLICATION"
+      handoff_log offer 1 "$OFFER_DETAIL"
+    else
+      handoff_failed "the broker did not issue a pairing offer (detail: $OFFER_DETAIL)" "$OFFER_DETAIL"
+    fi
   fi
-else
-  handoff_failed 'the broker did not report a ready local listener; check cosy status'
 fi
 
 if [ -z "$CLIENT_SKIP" ]; then
@@ -1236,5 +1392,61 @@ if [ -z "$CLIENT_SKIP" ]; then
     # does. macOS keeps a real three-way answer below because `open` asks LaunchServices and gets one.
     "$CLIENT_LAUNCH" >/dev/null 2>&1 </dev/null &
     printf 'Started %s\nIf no window appears, start it from your applications menu.\n' "$CLIENT_LAUNCH"
+  fi
+
+  # Did it work? The offer file cannot answer that: the client erases the file BEFORE it asks for its
+  # credential, so a vanished file is exactly as consistent with "the client never started" as with "the
+  # client is paired". Ask the broker, which is the only witness, and keep the three answers separate:
+  # accepted, still waiting, and could not verify. Collapsing the third into the first is how a one-use
+  # offer gets burned and the operator gets told something that is not true.
+  #
+  # Skipped when the previous version could not be closed: nothing was launched, so waiting would only
+  # delay the message that already tells the operator what to do.
+  if [ -z "$CLIENT_RUNNING" ] && [ -n "$PAIRING_ID" ]; then
+    HANDOFF_STEP='acceptance'
+    if "$BUN_BIN" "$APPLICATION" pair --status "$PAIRING_ID" --json --timeout "$HANDOFF_CONFIRM_SECONDS" \
+        > "$WORK/acceptance.json" 2> "$WORK/acceptance.err"
+    then
+      ACCEPTANCE_EXIT=0
+    else
+      ACCEPTANCE_EXIT=1
+    fi
+    ACCEPTANCE="$("$BUN_BIN" -e '
+      const report = JSON.parse(await Bun.file(process.argv[1]).text());
+      const state = report?.state;
+      console.log(report?.ok !== true ? "unverifiable"
+        : state === "accepted" && typeof report.peerId === "string" ? `accepted ${report.peerId}`
+        : state === "pending" ? "pending"
+        : state === "expired" ? "expired"
+        : state === "not-found" ? "not-found"
+        : "unverifiable");
+    ' "$WORK/acceptance.json" 2>/dev/null || printf 'unverifiable')"
+    handoff_log acceptance "$ACCEPTANCE_EXIT" "$ACCEPTANCE"
+    case "$ACCEPTANCE" in
+      accepted\ *)
+        # What the broker witnessed, and no more than that. It records the peer when the client asks for its
+        # credential; the client then has to store that credential and make itself use it, and both of those
+        # happen after this answer, in a process this script cannot see. Saying "paired" here is how an
+        # install comes to report success above a window that still says "Connect this device".
+        printf 'Desktop client: the broker accepted peer %s. Check that it shows connected.\n' \
+          "${ACCEPTANCE#accepted }"
+        ;;
+      pending)
+        printf 'Desktop client: not paired yet. Open %s within five minutes; the offer is still waiting.\n' \
+          "$CLIENT_LAUNCH"
+        ;;
+      expired)
+        printf 'Desktop client: the pairing offer expired before anything accepted it. Pair by hand with:\n  %s pair\n' \
+          "$APPLICATION"
+        ;;
+      not-found)
+        printf 'Desktop client: the broker no longer holds that pairing offer. Pair by hand with:\n  %s pair\n' \
+          "$APPLICATION"
+        ;;
+      *)
+        printf 'Desktop client: pairing was issued, but acceptance could not be confirmed. Check with:\n  %s devices list\n' \
+          "$APPLICATION"
+        ;;
+    esac
   fi
 fi
