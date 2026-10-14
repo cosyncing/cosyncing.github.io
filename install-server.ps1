@@ -25,8 +25,8 @@ $ProgressPreference = 'SilentlyContinue'
 # release host requires TLS 1.2. The shell installer states the same floor with `--tlsv1.2`.
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$VERSION = '0.6.4'
-$BASE_URL = 'https://github.com/cosyncing/cosyncing/releases/download/broker-v0.6.4'
+$VERSION = '0.6.5'
+$BASE_URL = 'https://github.com/cosyncing/cosyncing/releases/download/broker-v0.6.5'
 $KEY_ID = 'cosyncing-release-2026-09-13'
 # Only the P-256 key is embedded. The Ed25519 sibling is deliberately absent: Windows CNG exposes no
 # Ed25519 algorithm identifier and .NET Framework has no implementation, so carrying that key would ship a
@@ -38,8 +38,8 @@ $WEB_ASSET = 'cosyncing-web-app.tar.gz'
 # The oldest Bun this release's bundle was built and tested against.
 $MINIMUM_BUN = '1.3.8'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-$ARTIFACT_TABLE = 'cosyncing-app.js 70b18efae4a35cc9edb1f31b9f57a74e6c53b92843b76a029b0d231990c18be3 2899424
-cosyncing-web-app.tar.gz 66ea9191ed937874d4b1235c2c229f77ac269b087fd784f6e07a73c00901a98e 16163994'
+$ARTIFACT_TABLE = 'cosyncing-app.js c868e30e784c28dd6ba248fc86b7b21b14928c99b4017da688e3ef00b1972f34 2956669
+cosyncing-web-app.tar.gz e7be5d70c29d35cbd12d6d1c1767f6af5fff7e4f7abee414b95e1b1000eb18d3 16180139'
 # Official Bun builds for MINIMUM_BUN, most likely first: "<host> <asset> <sha256>". One table serves both
 # installers, so rows for hosts this script cannot run on are present and inert.
 $BUN_TABLE = 'linux-x64 bun-linux-x64.zip 0322b17f0722da76a64298aad498225aedcbf6df1008a1dee45e16ecb226a3f1
@@ -59,9 +59,9 @@ $BUN_RELEASE_BASE = 'https://github.com/oven-sh/bun/releases/download'
 $INSTALL_MODE = 'server'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". One table serves all
 # four installers, so rows for hosts this script cannot run on are present and inert.
-$CLIENT_TABLE = 'linux-x64 cosyncing-client-0.6.4-linux-x64.tar.gz 2e94d599f73bc394f324f60d7b962063acd5566c6b0c93be3dc3c88e542836ef 17183960
-macos-arm64 cosyncing-client-0.6.4-macos-arm64-unsigned.zip 9fa430575cd6d1352204c7db2271e6f8ea6e12f2b8b66f1c5e4efb44388e590f 31052235
-windows-x64 cosyncing-client-0.6.4-windows-x64-unsigned.zip 15a3f76f82c0e8d4c68de6b2677d1658df0bd9b482c943aad8868fb7b7a7e764 20252859'
+$CLIENT_TABLE = 'linux-x64 cosyncing-client-0.6.5-linux-x64.tar.gz 61fd129f537a640cf15a2670ef569093b68d9af07ce7591579608b939804b2ed 17212913
+macos-arm64 cosyncing-client-0.6.5-macos-arm64-unsigned.zip 23361d0a0dc830ea1d847a33ae743dce17379a8f19b86d4afee18838d3e2103a 31101664
+windows-x64 cosyncing-client-0.6.5-windows-x64-unsigned.zip 8785fda57641a0280bdc04ac997418f8c784f54217a256355ae6ae9da77d3c4f 20294855'
 
 # The one host this installer supports. Windows ARM64 and an x64 process emulated on ARM64 are refused
 # below, so there is nothing to select between.
@@ -88,6 +88,9 @@ $AdoptedNpmInstall = $false
 $CLIENT_ROOT = ''
 $StagedClient = ''
 $RetiredClient = ''
+$StagedClientReceipt = ''
+$ClientPlaced = $false
+$ClientReceiptCommitted = $false
 
 function Fail {
   param([Parameter(Mandatory = $true)][string] $Message)
@@ -337,6 +340,22 @@ function Set-OwnerOnlySecurity {
     }
   } catch {
     Fail "could not secure the $Kind at $Path ($($_.Exception.Message))"
+  }
+}
+
+# ZIP children inherit the protected staging descriptor. Protect each owned node before recording it.
+function Set-ClientTreeOwnerOnly {
+  param([Parameter(Mandatory = $true)][string] $Path)
+  $item = Get-Item -LiteralPath $Path -Force
+  if (Test-ReparsePoint -Item $item) { Fail 'desktop client contains a reparse point' }
+  if ((Get-PathOwnerSid -Path $Path) -ne $CURRENT_USER_SID) { Fail 'desktop client has a foreign owner' }
+  if ($item.PSIsContainer) {
+    Set-OwnerOnlySecurity -Path $Path -Kind 'directory'
+    foreach ($child in @(Get-ChildItem -LiteralPath $Path -Force)) {
+      Set-ClientTreeOwnerOnly -Path $child.FullName
+    }
+  } else {
+    Set-OwnerOnlySecurity -Path $Path -Kind 'file'
   }
 }
 
@@ -944,7 +963,7 @@ function Invoke-InstallCleanup {
   if ($WORK -and (Test-Path -LiteralPath $WORK)) {
     Remove-Item -LiteralPath $WORK -Recurse -Force -ErrorAction SilentlyContinue
   }
-  foreach ($path in @($StagedApplication, $StagedReceipt, $StagedWeb, $StagedClient)) {
+  foreach ($path in @($StagedApplication, $StagedReceipt, $StagedWeb, $StagedClient, $StagedClientReceipt)) {
     if ($path -and (Test-Path -LiteralPath $path)) {
       Remove-Item -LiteralPath $path -Recurse -Force -ErrorAction SilentlyContinue
     }
@@ -961,11 +980,16 @@ function Invoke-InstallCleanup {
   # The same rule for the desktop client the all-in-one places.
   if ($RetiredClient -and $CLIENT_ROOT -and
       (Test-Path -LiteralPath $RetiredClient -PathType Container)) {
-    if (Test-Path -LiteralPath $CLIENT_ROOT) {
+    if ($ClientReceiptCommitted) {
       Remove-Item -LiteralPath $RetiredClient -Recurse -Force -ErrorAction SilentlyContinue
     } else {
+      if ($ClientPlaced -and (Test-Path -LiteralPath $CLIENT_ROOT)) {
+        Remove-Item -LiteralPath $CLIENT_ROOT -Recurse -Force -ErrorAction SilentlyContinue
+      }
       Move-Item -LiteralPath $RetiredClient -Destination $CLIENT_ROOT -Force -ErrorAction SilentlyContinue
     }
+  } elseif ($ClientPlaced -and (-not $ClientReceiptCommitted) -and $CLIENT_ROOT) {
+    Remove-Item -LiteralPath $CLIENT_ROOT -Recurse -Force -ErrorAction SilentlyContinue
   }
 }
 
@@ -1505,8 +1529,7 @@ try {
   if ($null -eq $clientPin) {
     Write-Output "Desktop client: skipped - this release publishes no desktop client for $HOST_KEY."
   } else {
-    # Verified by exactly the rule the broker's own artifacts are verified by, minus the manifest - which
-    # names broker upgrades and deliberately does not name a client. See `Assert-SignedArtifact`.
+    # The signed manifest and embedded table identify the same archives from one assembly step.
     Assert-ChecksumPin -Pin $clientPin -ChecksumRows $checksumRows
     $clientSource = Get-VerifiedArtifact -Pin $clientPin
 
@@ -1562,12 +1585,9 @@ try {
       Move-Item -LiteralPath $CLIENT_ROOT -Destination $RetiredClient -Force
     }
     Move-Item -LiteralPath $extracted[0] -Destination $CLIENT_ROOT -Force
+    $ClientPlaced = $true
     Remove-Item -LiteralPath $StagedClient -Recurse -Force -ErrorAction SilentlyContinue
     $StagedClient = ''
-    if ($RetiredClient) {
-      Remove-Item -LiteralPath $RetiredClient -Recurse -Force -ErrorAction SilentlyContinue
-      $RetiredClient = ''
-    }
     $clientLaunch = Join-Path $CLIENT_ROOT 'cosyncing.exe'
     # A Start Menu entry, so the client is startable after this run rather than only by absolute path.
     # Linux gets a .desktop entry and macOS an .app the launcher already indexes; Windows had neither,
@@ -1613,6 +1633,34 @@ try {
       # An unwritable Start Menu is not a failed install: the client is placed and launchable either way,
       # and saying so beats failing a run whose broker and client are both correct.
       $shortcutPath = ''
+    }
+    Set-ClientTreeOwnerOnly -Path $CLIENT_ROOT
+    $clientReceipt = Join-Path $stateHome 'client-receipt'
+    if (Test-Path -LiteralPath $clientReceipt) {
+      $recordItem = Get-Item -LiteralPath $clientReceipt -Force
+      if ($recordItem.PSIsContainer -or (Test-ReparsePoint -Item $recordItem) -or
+          (Get-PathOwnerSid -Path $clientReceipt) -ne $CURRENT_USER_SID) {
+        Fail 'existing desktop client receipt is unsafe'
+      }
+    }
+    $StagedClientReceipt = New-StagingPath -Parent $stateHome -Prefix '.client-receipt.'
+    [IO.File]::WriteAllText($StagedClientReceipt,
+      "schemaVersion=1`nproduct=cosyncing`nhost=windows-x64`npath=$CLIENT_ROOT`n" +
+      "version=$VERSION`nsha256=$($clientPin.Sha256)`nexecutableSha256=$(Get-Sha256 -Path $clientLaunch)`n",
+      (New-Object Text.UTF8Encoding $false))
+    Set-OwnerOnlySecurity -Path $StagedClientReceipt -Kind 'file'
+    if (Test-Path -LiteralPath $clientReceipt) {
+      # ReplaceFile preserves destination security, so repair our receipt before replacement.
+      Set-OwnerOnlySecurity -Path $clientReceipt -Kind 'file'
+      [IO.File]::Replace($StagedClientReceipt, $clientReceipt, [NullString]::Value)
+    } else {
+      [IO.File]::Move($StagedClientReceipt, $clientReceipt)
+    }
+    $StagedClientReceipt = ''
+    $ClientReceiptCommitted = $true
+    if ($RetiredClient) {
+      Remove-Item -LiteralPath $RetiredClient -Recurse -Force -ErrorAction SilentlyContinue
+      $RetiredClient = ''
     }
     if ($shortcutPath) {
       Write-Output "Desktop client: $CLIENT_ROOT (Start Menu: $shortcutPath)"

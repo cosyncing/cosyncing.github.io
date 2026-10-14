@@ -3,8 +3,8 @@ set -eu
 
 umask 077
 
-VERSION='0.6.4'
-BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.6.4'
+VERSION='0.6.5'
+BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.6.5'
 KEY_ID='cosyncing-release-2026-09-13'
 PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQTIxMi9qTUZHSGVNQTRHRkFOY3F1aHJqeHpOT0EzN1hYcFViWWo0bHVzSTg9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo='
 P256_PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFWWR3Rm14Wk11NFNyTnpJMkFycm9jODNOcWxWVQp1RGR4OUFlR2lsVGlMaWFaMW1haEFzanRqb3hvMjZRTlAybm5JQ3VYcitpSVFyUlFXUlBKOFgrTEZRPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=='
@@ -14,8 +14,8 @@ WEB_ASSET='cosyncing-web-app.tar.gz'
 # The oldest Bun this release's bundle was built and tested against.
 MINIMUM_BUN='1.3.8'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-ARTIFACT_TABLE='cosyncing-app.js 70b18efae4a35cc9edb1f31b9f57a74e6c53b92843b76a029b0d231990c18be3 2899424
-cosyncing-web-app.tar.gz 66ea9191ed937874d4b1235c2c229f77ac269b087fd784f6e07a73c00901a98e 16163994'
+ARTIFACT_TABLE='cosyncing-app.js c868e30e784c28dd6ba248fc86b7b21b14928c99b4017da688e3ef00b1972f34 2956669
+cosyncing-web-app.tar.gz e7be5d70c29d35cbd12d6d1c1767f6af5fff7e4f7abee414b95e1b1000eb18d3 16180139'
 # Official Bun builds for MINIMUM_BUN, most likely first: "<host> <asset> <sha256>".
 BUN_TABLE='linux-x64 bun-linux-x64.zip 0322b17f0722da76a64298aad498225aedcbf6df1008a1dee45e16ecb226a3f1
 linux-x64 bun-linux-x64-baseline.zip bbe4632ac03d7495177d542ecefa8f21f9849273106525f6bb13172ec8e4ab2c
@@ -34,9 +34,9 @@ BUN_RELEASE_BASE='https://github.com/oven-sh/bun/releases/download'
 INSTALL_MODE='all'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". Rows for hosts this
 # script cannot resolve are inert, exactly like the Bun table's.
-CLIENT_TABLE='linux-x64 cosyncing-client-0.6.4-linux-x64.tar.gz 2e94d599f73bc394f324f60d7b962063acd5566c6b0c93be3dc3c88e542836ef 17183960
-macos-arm64 cosyncing-client-0.6.4-macos-arm64-unsigned.zip 9fa430575cd6d1352204c7db2271e6f8ea6e12f2b8b66f1c5e4efb44388e590f 31052235
-windows-x64 cosyncing-client-0.6.4-windows-x64-unsigned.zip 15a3f76f82c0e8d4c68de6b2677d1658df0bd9b482c943aad8868fb7b7a7e764 20252859'
+CLIENT_TABLE='linux-x64 cosyncing-client-0.6.5-linux-x64.tar.gz 61fd129f537a640cf15a2670ef569093b68d9af07ce7591579608b939804b2ed 17212913
+macos-arm64 cosyncing-client-0.6.5-macos-arm64-unsigned.zip 23361d0a0dc830ea1d847a33ae743dce17379a8f19b86d4afee18838d3e2103a 31101664
+windows-x64 cosyncing-client-0.6.5-windows-x64-unsigned.zip 8785fda57641a0280bdc04ac997418f8c784f54217a256355ae6ae9da77d3c4f 20294855'
 
 fail() {
   # Mirrors install.ps1: a red marker in front of a plain sentence, and only when stderr is a terminal,
@@ -312,6 +312,9 @@ CLIENT_RUNNING=''
 CLIENT_CONTAINER=''
 STAGED_CLIENT=''
 RETIRED_CLIENT=''
+STAGED_CLIENT_RECEIPT=''
+CLIENT_PLACED=''
+CLIENT_RECEIPT_COMMITTED=''
 STAGED_DESKTOP=''
 STAGED_PAIRING=''
 cleanup() {
@@ -321,6 +324,7 @@ cleanup() {
   [ -z "$STAGED_SHELL_ENV" ] || rm -f "$STAGED_SHELL_ENV"
   [ -z "$STAGED_WEB" ] || rm -rf "$STAGED_WEB"
   [ -z "$STAGED_CLIENT" ] || rm -rf "$STAGED_CLIENT"
+  [ -z "$STAGED_CLIENT_RECEIPT" ] || rm -f "$STAGED_CLIENT_RECEIPT"
   [ -z "$STAGED_DESKTOP" ] || rm -f "$STAGED_DESKTOP"
   [ -z "$STAGED_PAIRING" ] || rm -f "$STAGED_PAIRING"
   # A retired web root is the operator's previous client, held only for the instant between two renames.
@@ -335,11 +339,14 @@ cleanup() {
   # The same rule for the desktop client the all-in-one places: a retired install goes back unless its
   # replacement is already in position.
   if [ -n "$RETIRED_CLIENT" ] && [ -n "$CLIENT_ROOT" ] && [ -d "$RETIRED_CLIENT" ]; then
-    if [ -e "$CLIENT_ROOT" ] || [ -L "$CLIENT_ROOT" ]; then
+    if [ -n "$CLIENT_RECEIPT_COMMITTED" ]; then
       rm -rf "$RETIRED_CLIENT"
     else
+      [ -z "$CLIENT_PLACED" ] || rm -rf "$CLIENT_ROOT"
       mv "$RETIRED_CLIENT" "$CLIENT_ROOT" 2>/dev/null || true
     fi
+  elif [ -n "$CLIENT_PLACED" ] && [ -z "$CLIENT_RECEIPT_COMMITTED" ]; then
+    rm -rf "$CLIENT_ROOT"
   fi
 }
 trap cleanup EXIT HUP INT TERM
@@ -961,8 +968,36 @@ else
     mv "$CLIENT_ROOT" "$RETIRED_CLIENT" || fail 'could not retire the previous desktop client'
   fi
   mv "$EXTRACTED_CLIENT" "$CLIENT_ROOT" || fail 'could not install the desktop client'
+  CLIENT_PLACED=1
   rmdir "$STAGED_CLIENT" 2>/dev/null || rm -rf "$STAGED_CLIENT"
   STAGED_CLIENT=''
+  # This separate receipt records only a client this installer actually placed. Broker-only installs
+  # leave it alone. Preserve framework links and executable bits while protecting the placed tree.
+  CLIENT_RECEIPT="$STATE_HOME/client-receipt"
+  if [ -e "$CLIENT_RECEIPT" ] || [ -L "$CLIENT_RECEIPT" ]; then
+    [ -f "$CLIENT_RECEIPT" ] && [ ! -L "$CLIENT_RECEIPT" ] \
+      && [ "$(stat_owner "$CLIENT_RECEIPT")" = "$(id -u)" ] \
+      || fail 'existing desktop client receipt is unsafe'
+  fi
+  find "$CLIENT_ROOT" -type d -exec chmod go-rwx {} + \
+    || fail 'could not protect desktop client directories'
+  find "$CLIENT_ROOT" -type f -exec chmod go-rwx {} + \
+    || fail 'could not protect desktop client files'
+  if [ "$OS" = Darwin ]; then
+    CLIENT_EXECUTABLE="$CLIENT_ROOT/Contents/MacOS/Cosyncing"
+  else
+    CLIENT_EXECUTABLE="$CLIENT_ROOT/cosyncing"
+  fi
+  STAGED_CLIENT_RECEIPT="$(mktemp "$STATE_HOME/.client-receipt.XXXXXXXX")"
+  {
+    printf 'schemaVersion=1\nproduct=cosyncing\nhost=%s\npath=%s\n' "$CLIENT_HOST" "$CLIENT_ROOT"
+    printf 'version=%s\nsha256=%s\nexecutableSha256=%s\n' \
+      "$VERSION" "$CLIENT_SHA256" "$(sha256_of "$CLIENT_EXECUTABLE")"
+  } > "$STAGED_CLIENT_RECEIPT"
+  chmod 600 "$STAGED_CLIENT_RECEIPT"
+  mv "$STAGED_CLIENT_RECEIPT" "$CLIENT_RECEIPT" || fail 'could not commit desktop client receipt'
+  STAGED_CLIENT_RECEIPT=''
+  CLIENT_RECEIPT_COMMITTED=1
   if [ -n "$RETIRED_CLIENT" ]; then
     rm -rf "$RETIRED_CLIENT"
     RETIRED_CLIENT=''
