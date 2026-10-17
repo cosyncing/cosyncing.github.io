@@ -25,8 +25,8 @@ $ProgressPreference = 'SilentlyContinue'
 # release host requires TLS 1.2. The shell installer states the same floor with `--tlsv1.2`.
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$VERSION = '0.6.5'
-$BASE_URL = 'https://github.com/cosyncing/cosyncing/releases/download/broker-v0.6.5'
+$VERSION = '0.6.6'
+$BASE_URL = 'https://github.com/cosyncing/cosyncing/releases/download/broker-v0.6.6'
 $KEY_ID = 'cosyncing-release-2026-09-13'
 # Only the P-256 key is embedded. The Ed25519 sibling is deliberately absent: Windows CNG exposes no
 # Ed25519 algorithm identifier and .NET Framework has no implementation, so carrying that key would ship a
@@ -35,22 +35,24 @@ $P256_PUBLIC_KEY_B64 = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemow
 # The JavaScript application bundle and the web client sidecar this release publishes.
 $APP_ASSET = 'cosyncing-app.js'
 $WEB_ASSET = 'cosyncing-web-app.tar.gz'
-# The oldest Bun this release's bundle was built and tested against.
+# The oldest Bun this release's bundle runs under: the floor the broker itself enforces.
 $MINIMUM_BUN = '1.3.8'
+# The Bun this installer places, which every BUN_TABLE build is. Never below MINIMUM_BUN.
+$PINNED_BUN = '1.3.14'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-$ARTIFACT_TABLE = 'cosyncing-app.js c868e30e784c28dd6ba248fc86b7b21b14928c99b4017da688e3ef00b1972f34 2956669
-cosyncing-web-app.tar.gz e7be5d70c29d35cbd12d6d1c1767f6af5fff7e4f7abee414b95e1b1000eb18d3 16180139'
-# Official Bun builds for MINIMUM_BUN, most likely first: "<host> <asset> <sha256>". One table serves both
+$ARTIFACT_TABLE = 'cosyncing-app.js da919ea8d31e9ee6bc872117781fe3b595b431bf9402bc982114f7fd2d9b1657 3036141
+cosyncing-web-app.tar.gz 76e9a5b7826b308e6e59df1d2b525f2ba9f9745f7611700726c2d6cdf3e75d06 16184836'
+# Official Bun builds for PINNED_BUN, most likely first: "<host> <asset> <sha256>". One table serves both
 # installers, so rows for hosts this script cannot run on are present and inert.
-$BUN_TABLE = 'linux-x64 bun-linux-x64.zip 0322b17f0722da76a64298aad498225aedcbf6df1008a1dee45e16ecb226a3f1
-linux-x64 bun-linux-x64-baseline.zip bbe4632ac03d7495177d542ecefa8f21f9849273106525f6bb13172ec8e4ab2c
-linux-x64 bun-linux-x64-musl.zip a810b5083a830596cff3715402371917a200940efdeed6189bcde191e79d4633
-linux-x64 bun-linux-x64-musl-baseline.zip f05311fc12304ff8eaca136fc934eede6728055ba3d00cdb7e7dac394853f159
-linux-arm64 bun-linux-aarch64.zip 4e9deb6814a7ec7f68725ddd97d0d7b4065bcda9a850f69d497567e995a7fa33
-linux-arm64 bun-linux-aarch64-musl.zip 76dddebfd8c011c8b774991eb8ba47da770e4ce06ddc2b045aa0d659ef5fbe44
-darwin-arm64 bun-darwin-aarch64.zip 672a0a9a7b744d085a1d2219ca907e3e26f5579fca9e783a9510a4f98a36212f
-windows-x64 bun-windows-x64.zip 4c0a82866424e23d1bdaa9517307ec2f143ed513c15546dba0b859c6c55c47c7
-windows-x64 bun-windows-x64-baseline.zip 74f4dad7b4873ee70f63add9918400334e31acab9ba3fce9ef9906d96646e231'
+$BUN_TABLE = 'linux-x64 bun-linux-x64.zip 951ee2aee855f08595aeec6225226a298d3fea83a3dcd6465c09cbccdf7e848f
+linux-x64 bun-linux-x64-baseline.zip a063908ae08b7852ca10939bbdc6ceed3ddabce8fb9402dce83d65d73b36e6c7
+linux-x64 bun-linux-x64-musl.zip 14bd9aedeebf1dba67e8def9531c89bc989ecfdf1de42e5bfcaf1b8cd9294719
+linux-x64 bun-linux-x64-musl-baseline.zip 56a7d6806cf155536c0178f0ea5fbd098e684fa509ebdb4fc0a7e19fb65382dc
+linux-arm64 bun-linux-aarch64.zip a27ffb63a8310375836e0d6f668ae17fa8d8d18b88c37c821c65331973a19a3b
+linux-arm64 bun-linux-aarch64-musl.zip b98e0ad3625c5c00d1d5b5ff55605c7adddbfae151861e68ade57b2d3b8703bb
+darwin-arm64 bun-darwin-aarch64.zip d8b96221828ad6f97ac7ac0ab7e95872341af763001e8803e8267652c2652620
+windows-x64 bun-windows-x64.zip 0a0620930b6675d7ba440e81f4e0e00d3cfbe096c4b140d3fff02205e9e18922
+windows-x64 bun-windows-x64-baseline.zip 538f9c846355d9e847b2671bc00c47da4229a0befb24df3282b739770f3b475f'
 $BUN_RELEASE_BASE = 'https://github.com/oven-sh/bun/releases/download'
 # What this installer installs. `all` places the desktop GUI client too, runs setup, and hands the client
 # a pairing; `server` stops after the broker's own files, which is what this installer did before the
@@ -59,9 +61,9 @@ $BUN_RELEASE_BASE = 'https://github.com/oven-sh/bun/releases/download'
 $INSTALL_MODE = 'server'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". One table serves all
 # four installers, so rows for hosts this script cannot run on are present and inert.
-$CLIENT_TABLE = 'linux-x64 cosyncing-client-0.6.5-linux-x64.tar.gz 61fd129f537a640cf15a2670ef569093b68d9af07ce7591579608b939804b2ed 17212913
-macos-arm64 cosyncing-client-0.6.5-macos-arm64-unsigned.zip 23361d0a0dc830ea1d847a33ae743dce17379a8f19b86d4afee18838d3e2103a 31101664
-windows-x64 cosyncing-client-0.6.5-windows-x64-unsigned.zip 8785fda57641a0280bdc04ac997418f8c784f54217a256355ae6ae9da77d3c4f 20294855'
+$CLIENT_TABLE = 'linux-x64 cosyncing-client-0.6.6-linux-x64.tar.gz eccde38b897026d9f5b1daad3d333ba1144ba8e2c4c171cee75dc3d28c8075e0 17242455
+macos-arm64 cosyncing-client-0.6.6-macos-arm64-unsigned.zip 479b51a9c287cb7712774ed0ac3674a692e2d91e49aa4f58367539fafa2ee9c6 31134577
+windows-x64 cosyncing-client-0.6.6-windows-x64-unsigned.zip 36c61d80f88aa21882ca3e7ff771ea5c7b53f7c475bfbb3b9291cb35d2ce5b18 20319922'
 
 # The one host this installer supports. Windows ARM64 and an x64 process emulated on ARM64 are refused
 # below, so there is nothing to select between.
@@ -671,25 +673,60 @@ function Get-BunVersion {
   return $match.Value
 }
 
-function Test-BunMeetsFloor {
-  param([Parameter(Mandatory = $true)][string] $Path)
+function Test-BunAtLeast {
+  param(
+    [Parameter(Mandatory = $true)][string] $Path,
+    [Parameter(Mandatory = $true)][string] $Version
+  )
   $reported = Get-BunVersion -Path $Path
   if (-not $reported) { return $false }
-  return ([Version] $reported) -ge ([Version] $MINIMUM_BUN)
+  return ([Version] $reported) -ge ([Version] $Version)
 }
 
+function Test-BunMeetsFloor {
+  param([Parameter(Mandatory = $true)][string] $Path)
+  return (Test-BunAtLeast -Path $Path -Version $MINIMUM_BUN)
+}
+
+<#
+The runtime this installer places, and the one `cosy update` places when a later release raises the floor:
+one versioned directory per Bun inside the state home, `runtime\bun-<version>\bun.exe`. A newer runtime goes
+NEXT TO the one a running service executes rather than over it: Windows cannot replace an in-use
+`bun.exe`, and a re-run used to try exactly that against `%USERPROFILE%\.bun\bin\bun.exe` while the
+Scheduled Task was running from it. The older `$BUN_INSTALL\bin\bun.exe` is still READ, so an install made
+by an earlier installer keeps a Bun that meets the floor, but nothing is written there any more: that
+prefix belongs to Bun, and may be the operator's own.
+
+An operator's explicit COSYNCING_BUN_BIN needs only the floor: it is their choice, and `cosy update` never
+replaces it. Any other Bun found on the host is reused only at the pinned version or newer; below it, the
+pinned Bun is placed in the versioned layout beside it, so a new install or a re-run never settles on a Bun
+this release would not have chosen. Told not to install one (COSYNCING_SKIP_BUN_INSTALL=1), a Bun that
+meets the floor is still enough.
+#>
 function Resolve-Bun {
-  param([Parameter(Mandatory = $true)][string] $BunPrefix)
-  $candidates = New-Object System.Collections.ArrayList
+  param(
+    [Parameter(Mandatory = $true)][string] $BunPrefix,
+    [Parameter(Mandatory = $true)][string] $OwnedBun
+  )
   $override = Get-EnvironmentValue 'COSYNCING_BUN_BIN'
-  if ($override) { [void] $candidates.Add($override) }
+  if ($override -and (Test-Path -LiteralPath $override -PathType Leaf) -and
+      (Test-BunMeetsFloor -Path $override)) {
+    return $override
+  }
+  $found = New-Object System.Collections.ArrayList
   $onPath = @(Get-Command 'bun' -CommandType Application -ErrorAction SilentlyContinue |
     Select-Object -First 1)
-  if ($onPath.Count -gt 0) { [void] $candidates.Add($onPath[0].Source) }
-  [void] $candidates.Add((Join-Path $BunPrefix 'bin\bun.exe'))
-  foreach ($candidate in $candidates) {
+  if ($onPath.Count -gt 0) { [void] $found.Add($onPath[0].Source) }
+  [void] $found.Add((Join-Path $BunPrefix 'bin\bun.exe'))
+  foreach ($candidate in @($OwnedBun) + @($found)) {
     if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) { continue }
-    if (Test-BunMeetsFloor -Path $candidate) { return $candidate }
+    if (Test-BunAtLeast -Path $candidate -Version $PINNED_BUN) { return $candidate }
+  }
+  if ((Get-EnvironmentValue 'COSYNCING_SKIP_BUN_INSTALL') -eq '1') {
+    foreach ($candidate in $found) {
+      if (-not (Test-Path -LiteralPath $candidate -PathType Leaf)) { continue }
+      if (Test-BunMeetsFloor -Path $candidate) { return $candidate }
+    }
   }
   return ''
 }
@@ -914,16 +951,16 @@ would make the one component nothing here checks the one component that runs eve
 come straight from Bun's tagged release and their checksums are Bun's own published ones.
 #>
 function Install-PinnedBun {
-  param([Parameter(Mandatory = $true)][string] $BunPrefix)
+  param([Parameter(Mandatory = $true)][string] $RuntimeRoot)
   if ((Get-EnvironmentValue 'COSYNCING_SKIP_BUN_INSTALL') -eq '1') {
     Fail ("Bun $MINIMUM_BUN or newer is required to run cosyncing and COSYNCING_SKIP_BUN_INSTALL=1 " +
       'forbids installing it; install it from https://bun.sh and rerun this installer')
   }
-  Write-Output ("Bun $MINIMUM_BUN or newer is required and was not found. " +
-    "Installing the pinned Bun $MINIMUM_BUN.")
+  Write-Output ("No Bun $PINNED_BUN or newer was found. " +
+    "Installing the pinned Bun $PINNED_BUN.")
   foreach ($candidate in Get-BunCandidates) {
     $archive = Join-Path $WORK $candidate.Asset
-    Invoke-Download -Uri "$BUN_RELEASE_BASE/bun-v$MINIMUM_BUN/$($candidate.Asset)" -OutFile $archive
+    Invoke-Download -Uri "$BUN_RELEASE_BASE/bun-v$PINNED_BUN/$($candidate.Asset)" -OutFile $archive
     # A mismatch is fatal, never "try the next one": these are the bytes Bun published for this tag, so
     # different bytes mean the download was substituted, not that this build is wrong for this host.
     if ((Get-Sha256 -Path $archive) -ne $candidate.Sha256) {
@@ -948,14 +985,44 @@ function Install-PinnedBun {
     if (-not (Test-Path -LiteralPath $unpacked -PathType Leaf)) {
       Fail "$($candidate.Asset) did not contain a bun.exe"
     }
-    if (Test-BunMeetsFloor -Path $unpacked) {
-      Initialize-OwnerOnlyDirectory -Path (Join-Path $BunPrefix 'bin')
-      Move-Item -LiteralPath $unpacked -Destination (Join-Path $BunPrefix 'bin\bun.exe') -Force
+    if (Test-BunAtLeast -Path $unpacked -Version $PINNED_BUN) {
+      # Staged beside its destination and renamed into place, so the versioned directory either holds a
+      # complete, probed runtime or does not exist. A directory already there did not answer the probe in
+      # Resolve-Bun, so it is debris from an interrupted install rather than a runtime anything executes;
+      # if something does hold it open, removing it fails here and nothing else has been changed.
+      Initialize-OwnerOnlyDirectory -Path $RuntimeRoot
+      $destination = Join-Path $RuntimeRoot "bun-$PINNED_BUN"
+      $staging = New-StagingPath -Parent $RuntimeRoot -Prefix ".bun-$PINNED_BUN.staging."
+      $placed = $false
+      try {
+        New-OwnerOnlyDirectory -Path $staging
+        Move-Item -LiteralPath $unpacked -Destination (Join-Path $staging 'bun.exe') -Force
+        Set-OwnerOnlySecurity -Path (Join-Path $staging 'bun.exe') -Kind 'file'
+        if (Test-Path -LiteralPath $destination) {
+          $existing = Get-Item -LiteralPath $destination -Force
+          if (-not $existing.PSIsContainer -or (Test-ReparsePoint -Item $existing) -or
+              ((Get-PathOwnerSid -Path $destination) -ne $CURRENT_USER_SID)) {
+            Fail "unsafe runtime directory: $destination"
+          }
+          try {
+            Remove-Item -LiteralPath $destination -Recurse -Force -ErrorAction Stop
+          } catch {
+            Fail ("$destination is in use and could not be replaced; stop cosyncing (cosy stop) and " +
+              'rerun this installer')
+          }
+        }
+        Move-Item -LiteralPath $staging -Destination $destination -Force
+        $placed = $true
+      } finally {
+        if (-not $placed -and (Test-Path -LiteralPath $staging)) {
+          Remove-Item -LiteralPath $staging -Recurse -Force -ErrorAction SilentlyContinue
+        }
+      }
       return
     }
     Write-Output "  $($candidate.Asset) does not run on this host; trying the next pinned build"
   }
-  Fail ("no pinned Bun $MINIMUM_BUN build runs on this host ($HOST_KEY); install Bun from " +
+  Fail ("no pinned Bun $PINNED_BUN build runs on this host ($HOST_KEY); install Bun from " +
     'https://bun.sh and rerun this installer')
 }
 
@@ -1236,18 +1303,21 @@ try {
     $bunPrefix = Join-Path $userProfile '.bun'
   }
   $bunPrefix = [IO.Path]::GetFullPath($bunPrefix)
+  $runtimeRoot = Join-Path $stateHome 'runtime'
+  $ownedBun = Join-Path $runtimeRoot "bun-$PINNED_BUN\bun.exe"
 
-  $bunBin = Resolve-Bun -BunPrefix $bunPrefix
+  $bunBin = Resolve-Bun -BunPrefix $bunPrefix -OwnedBun $ownedBun
   $bunState = ''
   if ($bunBin) {
     $bunState = "already installed ($(Get-BunVersion -Path $bunBin) at $bunBin)"
   } else {
-    Install-PinnedBun -BunPrefix $bunPrefix
+    Initialize-OwnerOnlyDirectory -Path $stateHome
+    Install-PinnedBun -RuntimeRoot $runtimeRoot
     # Re-probe rather than trusting the install: it reports success for an install this script would still
     # refuse, and a Bun below the floor must never reach the receipt.
-    $bunBin = Resolve-Bun -BunPrefix $bunPrefix
+    $bunBin = Resolve-Bun -BunPrefix $bunPrefix -OwnedBun $ownedBun
     if (-not $bunBin) {
-      Fail ("Bun $MINIMUM_BUN or newer is still not runnable after installing it into $bunPrefix; " +
+      Fail ("the pinned Bun $PINNED_BUN is still not runnable after installing it into $runtimeRoot; " +
         'install it from https://bun.sh and rerun this installer')
     }
     $bunState = "installed by this script ($(Get-BunVersion -Path $bunBin) at $bunBin)"
@@ -1451,7 +1521,19 @@ try {
   # `cosy` is a batch shim with the resolved Bun baked in -- a convenience for humans typing commands.
   # `setup` writes the service's own action with bun.exe named directly and never reads this file. Written
   # without a byte-order mark, because cmd.exe would try to execute the mark as part of the first command.
-  [IO.File]::WriteAllText($aliasPath, "@`"$bunBin`" `"%~dp0cosyncing`" %*`r`n",
+  #
+  # The shape is the one `cosy update` writes when it moves the shim to a new Bun. cmd.exe re-reads a
+  # running batch file at the BYTE offset after the line it executed, so the command line ends in
+  # `& exit /b`, and the first line is padded to the length of the first line it replaces: a shim that is
+  # running while this rewrites it -- the older one-line shape included -- resumes at `@exit /b`.
+  $shimHead = '@goto :run'
+  if (Test-Path -LiteralPath $aliasPath -PathType Leaf) {
+    $previousShim = [IO.File]::ReadAllBytes($aliasPath)
+    $previousLine = [Array]::IndexOf($previousShim, [byte] 10)
+    if ($previousLine -ge 0) { $shimHead = $shimHead.PadRight([Math]::Max($shimHead.Length, $previousLine - 1)) }
+  }
+  [IO.File]::WriteAllText($aliasPath,
+    "$shimHead`r`n@exit /b`r`n:run`r`n@`"$bunBin`" `"%~dp0cosyncing`" %* & exit /b`r`n",
     (New-Object Text.UTF8Encoding $false))
   Set-OwnerOnlySecurity -Path $aliasPath -Kind 'file'
 

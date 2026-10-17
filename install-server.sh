@@ -3,29 +3,31 @@ set -eu
 
 umask 077
 
-VERSION='0.6.5'
-BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.6.5'
+VERSION='0.6.6'
+BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.6.6'
 KEY_ID='cosyncing-release-2026-09-13'
 PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQTIxMi9qTUZHSGVNQTRHRkFOY3F1aHJqeHpOT0EzN1hYcFViWWo0bHVzSTg9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo='
 P256_PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFWWR3Rm14Wk11NFNyTnpJMkFycm9jODNOcWxWVQp1RGR4OUFlR2lsVGlMaWFaMW1haEFzanRqb3hvMjZRTlAybm5JQ3VYcitpSVFyUlFXUlBKOFgrTEZRPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=='
 # The JavaScript application bundle and the web client sidecar this release publishes.
 APP_ASSET='cosyncing-app.js'
 WEB_ASSET='cosyncing-web-app.tar.gz'
-# The oldest Bun this release's bundle was built and tested against.
+# The oldest Bun this release's bundle runs under: the floor the broker itself enforces.
 MINIMUM_BUN='1.3.8'
+# The Bun this installer places, which every BUN_TABLE build is. Never below MINIMUM_BUN.
+PINNED_BUN='1.3.14'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-ARTIFACT_TABLE='cosyncing-app.js c868e30e784c28dd6ba248fc86b7b21b14928c99b4017da688e3ef00b1972f34 2956669
-cosyncing-web-app.tar.gz e7be5d70c29d35cbd12d6d1c1767f6af5fff7e4f7abee414b95e1b1000eb18d3 16180139'
-# Official Bun builds for MINIMUM_BUN, most likely first: "<host> <asset> <sha256>".
-BUN_TABLE='linux-x64 bun-linux-x64.zip 0322b17f0722da76a64298aad498225aedcbf6df1008a1dee45e16ecb226a3f1
-linux-x64 bun-linux-x64-baseline.zip bbe4632ac03d7495177d542ecefa8f21f9849273106525f6bb13172ec8e4ab2c
-linux-x64 bun-linux-x64-musl.zip a810b5083a830596cff3715402371917a200940efdeed6189bcde191e79d4633
-linux-x64 bun-linux-x64-musl-baseline.zip f05311fc12304ff8eaca136fc934eede6728055ba3d00cdb7e7dac394853f159
-linux-arm64 bun-linux-aarch64.zip 4e9deb6814a7ec7f68725ddd97d0d7b4065bcda9a850f69d497567e995a7fa33
-linux-arm64 bun-linux-aarch64-musl.zip 76dddebfd8c011c8b774991eb8ba47da770e4ce06ddc2b045aa0d659ef5fbe44
-darwin-arm64 bun-darwin-aarch64.zip 672a0a9a7b744d085a1d2219ca907e3e26f5579fca9e783a9510a4f98a36212f
-windows-x64 bun-windows-x64.zip 4c0a82866424e23d1bdaa9517307ec2f143ed513c15546dba0b859c6c55c47c7
-windows-x64 bun-windows-x64-baseline.zip 74f4dad7b4873ee70f63add9918400334e31acab9ba3fce9ef9906d96646e231'
+ARTIFACT_TABLE='cosyncing-app.js da919ea8d31e9ee6bc872117781fe3b595b431bf9402bc982114f7fd2d9b1657 3036141
+cosyncing-web-app.tar.gz 76e9a5b7826b308e6e59df1d2b525f2ba9f9745f7611700726c2d6cdf3e75d06 16184836'
+# Official Bun builds for PINNED_BUN, most likely first: "<host> <asset> <sha256>".
+BUN_TABLE='linux-x64 bun-linux-x64.zip 951ee2aee855f08595aeec6225226a298d3fea83a3dcd6465c09cbccdf7e848f
+linux-x64 bun-linux-x64-baseline.zip a063908ae08b7852ca10939bbdc6ceed3ddabce8fb9402dce83d65d73b36e6c7
+linux-x64 bun-linux-x64-musl.zip 14bd9aedeebf1dba67e8def9531c89bc989ecfdf1de42e5bfcaf1b8cd9294719
+linux-x64 bun-linux-x64-musl-baseline.zip 56a7d6806cf155536c0178f0ea5fbd098e684fa509ebdb4fc0a7e19fb65382dc
+linux-arm64 bun-linux-aarch64.zip a27ffb63a8310375836e0d6f668ae17fa8d8d18b88c37c821c65331973a19a3b
+linux-arm64 bun-linux-aarch64-musl.zip b98e0ad3625c5c00d1d5b5ff55605c7adddbfae151861e68ade57b2d3b8703bb
+darwin-arm64 bun-darwin-aarch64.zip d8b96221828ad6f97ac7ac0ab7e95872341af763001e8803e8267652c2652620
+windows-x64 bun-windows-x64.zip 0a0620930b6675d7ba440e81f4e0e00d3cfbe096c4b140d3fff02205e9e18922
+windows-x64 bun-windows-x64-baseline.zip 538f9c846355d9e847b2671bc00c47da4229a0befb24df3282b739770f3b475f'
 BUN_RELEASE_BASE='https://github.com/oven-sh/bun/releases/download'
 # What this installer installs. `all` places the desktop GUI client too, runs setup, and hands the client
 # a pairing; `server` stops after the broker's own files, which is what this installer did before the
@@ -34,9 +36,9 @@ BUN_RELEASE_BASE='https://github.com/oven-sh/bun/releases/download'
 INSTALL_MODE='server'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". Rows for hosts this
 # script cannot resolve are inert, exactly like the Bun table's.
-CLIENT_TABLE='linux-x64 cosyncing-client-0.6.5-linux-x64.tar.gz 61fd129f537a640cf15a2670ef569093b68d9af07ce7591579608b939804b2ed 17212913
-macos-arm64 cosyncing-client-0.6.5-macos-arm64-unsigned.zip 23361d0a0dc830ea1d847a33ae743dce17379a8f19b86d4afee18838d3e2103a 31101664
-windows-x64 cosyncing-client-0.6.5-windows-x64-unsigned.zip 8785fda57641a0280bdc04ac997418f8c784f54217a256355ae6ae9da77d3c4f 20294855'
+CLIENT_TABLE='linux-x64 cosyncing-client-0.6.6-linux-x64.tar.gz eccde38b897026d9f5b1daad3d333ba1144ba8e2c4c171cee75dc3d28c8075e0 17242455
+macos-arm64 cosyncing-client-0.6.6-macos-arm64-unsigned.zip 479b51a9c287cb7712774ed0ac3674a692e2d91e49aa4f58367539fafa2ee9c6 31134577
+windows-x64 cosyncing-client-0.6.6-windows-x64-unsigned.zip 36c61d80f88aa21882ca3e7ff771ea5c7b53f7c475bfbb3b9291cb35d2ce5b18 20319922'
 
 fail() {
   # Mirrors install.ps1: a red marker in front of a plain sentence, and only when stderr is a terminal,
@@ -317,8 +319,10 @@ CLIENT_PLACED=''
 CLIENT_RECEIPT_COMMITTED=''
 STAGED_DESKTOP=''
 STAGED_PAIRING=''
+STAGED_RUNTIME=''
 cleanup() {
   rm -rf "$WORK"
+  [ -z "$STAGED_RUNTIME" ] || rm -rf "$STAGED_RUNTIME"
   [ -z "$STAGED_APPLICATION" ] || rm -f "$STAGED_APPLICATION"
   [ -z "$STAGED_RECEIPT" ] || rm -f "$STAGED_RECEIPT"
   [ -z "$STAGED_SHELL_ENV" ] || rm -f "$STAGED_SHELL_ENV"
@@ -500,26 +504,66 @@ fetch_verified() {
 fetch_verified "$APP_ASSET" "$APP_EXPECTED" "$APP_EXPECTED_SIZE" "$WORK/$APP_ASSET"
 fetch_verified "$WEB_ASSET" "$WEB_EXPECTED" "$WEB_EXPECTED_SIZE" "$WORK/$WEB_ASSET"
 
+ensure_owned_directory() {
+  path="$1"
+  if [ -e "$path" ] || [ -L "$path" ]; then
+    [ -d "$path" ] && [ ! -L "$path" ] || fail "unsafe directory: $path"
+    [ "$(stat_owner "$path")" = "$(id -u)" ] || fail "directory is not owned by the current user: $path"
+    mode="$(stat_mode "$path")"
+    # POSIX arithmetic; the leading 0 forces octal in $(( )) without bash's 8#nn syntax.
+    [ $(( 0$mode & 077 )) -eq 0 ] || fail "directory is accessible to another user: $path"
+  else
+    mkdir "$path" || fail "could not create directory: $path"
+  fi
+}
+
 # The bundle carries no interpreter, so a Bun that can run it is a hard prerequisite rather than a nicety.
 # COSYNCING_BUN_BIN is honoured first because it is the same override the broker itself reads.
 bun_version_of() {
   "$1" --revision 2>/dev/null | sed -n '1s/^\([0-9][0-9]*\.[0-9][0-9]*\.[0-9][0-9]*\).*$/\1/p'
 }
-bun_meets_floor() {
+# bun_at_least <path> <version>: the Bun at <path> answers --revision with <version> or newer.
+bun_at_least() {
   reported="$(bun_version_of "$1")"
   [ -n "$reported" ] || return 1
-  printf '%s\n%s\n' "$MINIMUM_BUN" "$reported" | sort -t. -k1,1n -k2,2n -k3,3n | head -n 1 | grep -Fxq "$MINIMUM_BUN"
+  printf '%s\n%s\n' "$2" "$reported" | sort -t. -k1,1n -k2,2n -k3,3n | head -n 1 | grep -Fxq "$2"
 }
-# Bun's own installer puts its prefix at $BUN_INSTALL, defaulting to ~/.bun. Honour an existing setting so
-# a host that already directs Bun elsewhere is not given a second copy in a directory it never reads.
+bun_meets_floor() { bun_at_least "$1" "$MINIMUM_BUN"; }
+# The runtime this installer places, and the one `cosy update` places when a later release raises the floor:
+# one versioned directory per Bun inside the state home. A newer runtime is installed NEXT TO the one a
+# running service executes rather than over it -- replacing an in-use Bun is impossible on Windows and
+# leaves nothing to roll back to anywhere -- and the broker's own updater writes exactly this layout.
+RUNTIME_ROOT="$STATE_HOME/runtime"
+OWNED_BUN="$RUNTIME_ROOT/bun-$PINNED_BUN/bun"
+# Bun's own installer puts its prefix at $BUN_INSTALL, defaulting to ~/.bun. Earlier installers placed the
+# pinned Bun there; it is still READ, so an install made by one of them keeps a Bun that meets the floor,
+# but nothing is written there any more: that prefix belongs to Bun, and may be the operator's own Bun.
 BUN_PREFIX="${BUN_INSTALL:-$HOME/.bun}"
 case "$BUN_PREFIX" in
   /*) ;;
   *) fail 'BUN_INSTALL must be absolute when set' ;;
 esac
 
+# Which Bun this install runs under. An operator's explicit COSYNCING_BUN_BIN needs only the floor: it is
+# their choice, and `cosy update` never replaces it. Any other Bun found on the host is reused only at the
+# pinned version or newer; below it, the pinned Bun is placed in the versioned layout beside it, so a new
+# install or a re-run never settles on a Bun this release would not have chosen. Told not to install one
+# (COSYNCING_SKIP_BUN_INSTALL=1), a Bun that meets the floor is still enough.
 resolve_bun() {
-  for candidate in "${COSYNCING_BUN_BIN:-}" "$(command -v bun 2>/dev/null || true)" "$BUN_PREFIX/bin/bun"; do
+  if [ -n "${COSYNCING_BUN_BIN:-}" ] && [ -x "$COSYNCING_BUN_BIN" ] && bun_meets_floor "$COSYNCING_BUN_BIN"; then
+    BUN_BIN="$COSYNCING_BUN_BIN"
+    return 0
+  fi
+  for candidate in "$OWNED_BUN" "$(command -v bun 2>/dev/null || true)" "$BUN_PREFIX/bin/bun"; do
+    [ -n "$candidate" ] || continue
+    [ -x "$candidate" ] || continue
+    if bun_at_least "$candidate" "$PINNED_BUN"; then
+      BUN_BIN="$candidate"
+      return 0
+    fi
+  done
+  [ "${COSYNCING_SKIP_BUN_INSTALL:-}" = 1 ] || return 1
+  for candidate in "$(command -v bun 2>/dev/null || true)" "$BUN_PREFIX/bin/bun"; do
     [ -n "$candidate" ] || continue
     [ -x "$candidate" ] || continue
     if bun_meets_floor "$candidate"; then
@@ -575,13 +619,13 @@ $(printf '%s\n' "$rows" | awk '!/-baseline/')"
 install_bun() {
   [ "${COSYNCING_SKIP_BUN_INSTALL:-}" != 1 ] || fail \
     "Bun $MINIMUM_BUN or newer is required to run cosyncing and COSYNCING_SKIP_BUN_INSTALL=1 forbids installing it; install it from https://bun.sh and rerun this installer"
-  printf 'Bun %s or newer is required and was not found. Installing the pinned Bun %s.\n' \
-    "$MINIMUM_BUN" "$MINIMUM_BUN"
+  printf 'No Bun %s or newer was found. Installing the pinned Bun %s.\n' \
+    "$PINNED_BUN" "$PINNED_BUN"
   bun_candidates "$TARGET" > "$WORK/bun-candidates"
   while read -r bun_asset bun_digest; do
     [ -n "$bun_asset" ] || continue
     curl --proto '=https' --tlsv1.2 --fail --silent --show-error --location \
-      --output "$WORK/$bun_asset" "$BUN_RELEASE_BASE/bun-v$MINIMUM_BUN/$bun_asset" \
+      --output "$WORK/$bun_asset" "$BUN_RELEASE_BASE/bun-v$PINNED_BUN/$bun_asset" \
       || fail "could not download $bun_asset from $BUN_RELEASE_BASE"
     # A mismatch is fatal, never "try the next one": these are the bytes Bun published for this tag, so
     # different bytes mean the download was substituted, not that this build is wrong for this host.
@@ -593,16 +637,30 @@ install_bun() {
     # Bun packs one directory named after the asset, holding the binary.
     unpacked="$WORK/bun-unpack/${bun_asset%.zip}/bun"
     [ -f "$unpacked" ] || fail "$bun_asset did not contain a bun binary"
-    chmod 755 "$unpacked"
-    if bun_meets_floor "$unpacked"; then
-      mkdir -p "$BUN_PREFIX/bin" || fail "could not create the Bun prefix: $BUN_PREFIX"
-      mv "$unpacked" "$BUN_PREFIX/bin/bun" || fail "could not install Bun into $BUN_PREFIX/bin"
-      chmod 755 "$BUN_PREFIX/bin/bun"
+    chmod 700 "$unpacked"
+    if bun_at_least "$unpacked" "$PINNED_BUN"; then
+      # Staged beside its destination and renamed into place, so the versioned directory either holds a
+      # complete, probed runtime or does not exist. A directory already there that did not answer the
+      # probe above is debris from an interrupted install, not a runtime anything executes.
+      ensure_owned_directory "$STATE_HOME"
+      ensure_owned_directory "$RUNTIME_ROOT"
+      STAGED_RUNTIME="$(mktemp -d "$RUNTIME_ROOT/.bun-$PINNED_BUN.staging.XXXXXXXX")" \
+        || fail "could not stage Bun in $RUNTIME_ROOT"
+      chmod 700 "$STAGED_RUNTIME"
+      mv "$unpacked" "$STAGED_RUNTIME/bun" || fail "could not stage Bun in $RUNTIME_ROOT"
+      if [ -e "$RUNTIME_ROOT/bun-$PINNED_BUN" ] || [ -L "$RUNTIME_ROOT/bun-$PINNED_BUN" ]; then
+        [ -d "$RUNTIME_ROOT/bun-$PINNED_BUN" ] && [ ! -L "$RUNTIME_ROOT/bun-$PINNED_BUN" ] \
+          && [ "$(stat_owner "$RUNTIME_ROOT/bun-$PINNED_BUN")" = "$(id -u)" ] \
+          || fail "unsafe runtime directory: $RUNTIME_ROOT/bun-$PINNED_BUN"
+        rm -rf "$RUNTIME_ROOT/bun-$PINNED_BUN"
+      fi
+      mv "$STAGED_RUNTIME" "$RUNTIME_ROOT/bun-$PINNED_BUN" || fail "could not install Bun into $RUNTIME_ROOT"
+      STAGED_RUNTIME=''
       return 0
     fi
     printf '  %s does not run on this host; trying the next pinned build\n' "$bun_asset"
   done < "$WORK/bun-candidates"
-  fail "no pinned Bun $MINIMUM_BUN build runs on this host ($TARGET); install Bun from https://bun.sh and rerun this installer"
+  fail "no pinned Bun $PINNED_BUN build runs on this host ($TARGET); install Bun from https://bun.sh and rerun this installer"
 }
 
 BUN_BIN=''
@@ -614,7 +672,7 @@ else
   # Re-probe rather than trusting the installer's exit status: it reports success for an install this script
   # would still refuse, and a Bun below the floor must never reach the receipt.
   resolve_bun || fail \
-    "Bun $MINIMUM_BUN or newer is still not runnable after installing it into $BUN_PREFIX; install it from https://bun.sh and rerun this installer"
+    "the pinned Bun $PINNED_BUN is still not runnable after installing it into $RUNTIME_ROOT; install it from https://bun.sh and rerun this installer"
   BUN_STATE="installed by this script ($(bun_version_of "$BUN_BIN") at $BUN_BIN)"
 fi
 case "$BUN_BIN" in
@@ -713,19 +771,6 @@ setup_receipt_owns_application() {
       process.exit(owned ? 0 : 1);
     } catch { process.exit(1); }
   ' "$install_state" "$APPLICATION" "$actual_sha" >/dev/null 2>&1
-}
-
-ensure_owned_directory() {
-  path="$1"
-  if [ -e "$path" ] || [ -L "$path" ]; then
-    [ -d "$path" ] && [ ! -L "$path" ] || fail "unsafe directory: $path"
-    [ "$(stat_owner "$path")" = "$(id -u)" ] || fail "directory is not owned by the current user: $path"
-    mode="$(stat_mode "$path")"
-    # POSIX arithmetic; the leading 0 forces octal in $(( )) without bash's 8#nn syntax.
-    [ $(( 0$mode & 077 )) -eq 0 ] || fail "directory is accessible to another user: $path"
-  else
-    mkdir "$path" || fail "could not create directory: $path"
-  fi
 }
 
 ensure_owned_directory "$STATE_HOME"
