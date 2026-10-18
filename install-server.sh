@@ -3,8 +3,8 @@ set -eu
 
 umask 077
 
-VERSION='0.6.6'
-BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.6.6'
+VERSION='0.7.0'
+BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.7.0'
 KEY_ID='cosyncing-release-2026-09-13'
 PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQTIxMi9qTUZHSGVNQTRHRkFOY3F1aHJqeHpOT0EzN1hYcFViWWo0bHVzSTg9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo='
 P256_PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFWWR3Rm14Wk11NFNyTnpJMkFycm9jODNOcWxWVQp1RGR4OUFlR2lsVGlMaWFaMW1haEFzanRqb3hvMjZRTlAybm5JQ3VYcitpSVFyUlFXUlBKOFgrTEZRPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=='
@@ -12,12 +12,12 @@ P256_PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0F
 APP_ASSET='cosyncing-app.js'
 WEB_ASSET='cosyncing-web-app.tar.gz'
 # The oldest Bun this release's bundle runs under: the floor the broker itself enforces.
-MINIMUM_BUN='1.3.8'
+MINIMUM_BUN='1.3.14'
 # The Bun this installer places, which every BUN_TABLE build is. Never below MINIMUM_BUN.
 PINNED_BUN='1.3.14'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-ARTIFACT_TABLE='cosyncing-app.js da919ea8d31e9ee6bc872117781fe3b595b431bf9402bc982114f7fd2d9b1657 3036141
-cosyncing-web-app.tar.gz 76e9a5b7826b308e6e59df1d2b525f2ba9f9745f7611700726c2d6cdf3e75d06 16184836'
+ARTIFACT_TABLE='cosyncing-app.js 0ff64dc8fb48e632d0859ebe6153bf8b466fd9dc4b4e204bc8019a00174617bc 3104602
+cosyncing-web-app.tar.gz 58a32a1e1b2f2cc0fa0095913231c8f565a0900d02bcd5f0382d0691cc5e80b3 18679443'
 # Official Bun builds for PINNED_BUN, most likely first: "<host> <asset> <sha256>".
 BUN_TABLE='linux-x64 bun-linux-x64.zip 951ee2aee855f08595aeec6225226a298d3fea83a3dcd6465c09cbccdf7e848f
 linux-x64 bun-linux-x64-baseline.zip a063908ae08b7852ca10939bbdc6ceed3ddabce8fb9402dce83d65d73b36e6c7
@@ -36,9 +36,9 @@ BUN_RELEASE_BASE='https://github.com/oven-sh/bun/releases/download'
 INSTALL_MODE='server'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". Rows for hosts this
 # script cannot resolve are inert, exactly like the Bun table's.
-CLIENT_TABLE='linux-x64 cosyncing-client-0.6.6-linux-x64.tar.gz eccde38b897026d9f5b1daad3d333ba1144ba8e2c4c171cee75dc3d28c8075e0 17242455
-macos-arm64 cosyncing-client-0.6.6-macos-arm64-unsigned.zip 479b51a9c287cb7712774ed0ac3674a692e2d91e49aa4f58367539fafa2ee9c6 31134577
-windows-x64 cosyncing-client-0.6.6-windows-x64-unsigned.zip 36c61d80f88aa21882ca3e7ff771ea5c7b53f7c475bfbb3b9291cb35d2ce5b18 20319922'
+CLIENT_TABLE='linux-x64 cosyncing-client-0.7.0-linux-x64.tar.gz fa5ad2b9092b6ffb675996b6141db78f917aa8403f9953f5e587f5458c85831e 21007758
+macos-arm64 cosyncing-client-0.7.0-macos-arm64-unsigned.zip 85472409873923079faee6c6e7caf72b9b8dae79e23e7c44718ec0279c3c2129 38143785
+windows-x64 cosyncing-client-0.7.0-windows-x64-unsigned.zip 3d0bf568878daa39a266671febbc65b9fb988895f3155ff3bd8a82fcc19c44b3 24247663'
 
 fail() {
   # Mirrors install.ps1: a red marker in front of a plain sentence, and only when stderr is a terminal,
@@ -727,8 +727,7 @@ adopt_npm_application() {
 
   if [ ! -r /dev/tty ] || ! ( : < /dev/tty ) 2>/dev/null; then
     printf 'cosyncing install: replacing an npm install needs your answer and no terminal is attached.\n' >&2
-    printf 'Rerun this installer from a terminal, or stay on npm with:\n  npm update -g cosyncing\n' >&2
-    print_setup_command >&2
+    printf 'Rerun this installer from a terminal to confirm migration; the existing installation is unchanged.\n' >&2
     exit 1
   fi
 
@@ -872,30 +871,6 @@ case "$SIGNATURE_STATE" in
     printf 'This installer was itself delivered over TLS and carries the expected digests; the broker\n'
     printf 'still verifies every future upgrade with its own built-in Ed25519 check.\n' ;;
 esac
-
-# The npm package is preserved by design — `uninstall` says the same thing — but after a takeover it is a
-# loaded gun: its own `setup` copies itself back over the application just placed, and the next run of this
-# installer would then refuse again. Offer to remove it, and never fail the install over the answer.
-if [ -n "$ADOPTED_NPM_INSTALL" ]; then
-  NPM_ROOT=''
-  command -v npm >/dev/null 2>&1 && NPM_ROOT="$(npm root -g 2>/dev/null)" || NPM_ROOT=''
-  if [ -n "$NPM_ROOT" ] && [ -d "$NPM_ROOT/cosyncing" ]; then
-    printf '\nThe npm package it came from is still installed at %s/cosyncing.\n' "$NPM_ROOT"
-    printf 'Its own `setup` would copy itself back over the install just made.\n'
-    printf 'Remove it now? [y/N] '
-    REPLY=''
-    read -r REPLY < /dev/tty || REPLY=''
-    case "$REPLY" in
-      y|Y|yes|YES|Yes)
-        if npm uninstall -g cosyncing >/dev/null 2>&1; then
-          printf 'Removed the npm package.\n'
-        else
-          printf 'Could not remove the npm package; remove it by hand:\n  npm uninstall -g cosyncing\n' >&2
-        fi ;;
-      *) printf 'Left it in place. Remove it later with:\n  npm uninstall -g cosyncing\n' ;;
-    esac
-  fi
-fi
 
 if [ "$INSTALL_MODE" != all ]; then
   # Named, not removed. This installer does not run setup, so the service is still the previous broker
@@ -1143,6 +1118,29 @@ if [ "$SETUP_STATUS" -ne 0 ]; then
   printf 'cosyncing install: setup did not complete; the broker files are installed. Rerun:\n' >&2
   print_setup_command >&2
   exit 1
+fi
+
+# Setup succeeded with the replacement. Only now offer to remove the old acquisition package.
+# A declined or failed setup must leave it available for recovery.
+if [ -n "$ADOPTED_NPM_INSTALL" ]; then
+  NPM_ROOT=''
+  command -v npm >/dev/null 2>&1 && NPM_ROOT="$(npm root -g 2>/dev/null)" || NPM_ROOT=''
+  if [ -n "$NPM_ROOT" ] && [ -d "$NPM_ROOT/cosyncing" ]; then
+    printf '\nThe npm package it came from is still installed at %s/cosyncing.\n' "$NPM_ROOT"
+    printf 'Its own `setup` would copy itself back over the install just made.\n'
+    printf 'Remove it now? [y/N] '
+    REPLY=''
+    read -r REPLY < /dev/tty || REPLY=''
+    case "$REPLY" in
+      y|Y|yes|YES|Yes)
+        if npm uninstall -g cosyncing >/dev/null 2>&1; then
+          printf 'Removed the npm package.\n'
+        else
+          printf 'Could not remove the npm package; remove it by hand:\n  npm uninstall -g cosyncing\n' >&2
+        fi ;;
+      *) printf 'Left it in place. Remove it later with:\n  npm uninstall -g cosyncing\n' ;;
+    esac
+  fi
 fi
 
 # The web client is version-stamped, so an upgrade does not replace the previous root — it lands beside

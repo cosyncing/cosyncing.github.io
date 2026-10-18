@@ -25,8 +25,8 @@ $ProgressPreference = 'SilentlyContinue'
 # release host requires TLS 1.2. The shell installer states the same floor with `--tlsv1.2`.
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$VERSION = '0.6.6'
-$BASE_URL = 'https://github.com/cosyncing/cosyncing/releases/download/broker-v0.6.6'
+$VERSION = '0.7.0'
+$BASE_URL = 'https://github.com/cosyncing/cosyncing/releases/download/broker-v0.7.0'
 $KEY_ID = 'cosyncing-release-2026-09-13'
 # Only the P-256 key is embedded. The Ed25519 sibling is deliberately absent: Windows CNG exposes no
 # Ed25519 algorithm identifier and .NET Framework has no implementation, so carrying that key would ship a
@@ -36,12 +36,12 @@ $P256_PUBLIC_KEY_B64 = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemow
 $APP_ASSET = 'cosyncing-app.js'
 $WEB_ASSET = 'cosyncing-web-app.tar.gz'
 # The oldest Bun this release's bundle runs under: the floor the broker itself enforces.
-$MINIMUM_BUN = '1.3.8'
+$MINIMUM_BUN = '1.3.14'
 # The Bun this installer places, which every BUN_TABLE build is. Never below MINIMUM_BUN.
 $PINNED_BUN = '1.3.14'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-$ARTIFACT_TABLE = 'cosyncing-app.js da919ea8d31e9ee6bc872117781fe3b595b431bf9402bc982114f7fd2d9b1657 3036141
-cosyncing-web-app.tar.gz 76e9a5b7826b308e6e59df1d2b525f2ba9f9745f7611700726c2d6cdf3e75d06 16184836'
+$ARTIFACT_TABLE = 'cosyncing-app.js 0ff64dc8fb48e632d0859ebe6153bf8b466fd9dc4b4e204bc8019a00174617bc 3104602
+cosyncing-web-app.tar.gz 58a32a1e1b2f2cc0fa0095913231c8f565a0900d02bcd5f0382d0691cc5e80b3 18679443'
 # Official Bun builds for PINNED_BUN, most likely first: "<host> <asset> <sha256>". One table serves both
 # installers, so rows for hosts this script cannot run on are present and inert.
 $BUN_TABLE = 'linux-x64 bun-linux-x64.zip 951ee2aee855f08595aeec6225226a298d3fea83a3dcd6465c09cbccdf7e848f
@@ -61,9 +61,9 @@ $BUN_RELEASE_BASE = 'https://github.com/oven-sh/bun/releases/download'
 $INSTALL_MODE = 'all'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". One table serves all
 # four installers, so rows for hosts this script cannot run on are present and inert.
-$CLIENT_TABLE = 'linux-x64 cosyncing-client-0.6.6-linux-x64.tar.gz eccde38b897026d9f5b1daad3d333ba1144ba8e2c4c171cee75dc3d28c8075e0 17242455
-macos-arm64 cosyncing-client-0.6.6-macos-arm64-unsigned.zip 479b51a9c287cb7712774ed0ac3674a692e2d91e49aa4f58367539fafa2ee9c6 31134577
-windows-x64 cosyncing-client-0.6.6-windows-x64-unsigned.zip 36c61d80f88aa21882ca3e7ff771ea5c7b53f7c475bfbb3b9291cb35d2ce5b18 20319922'
+$CLIENT_TABLE = 'linux-x64 cosyncing-client-0.7.0-linux-x64.tar.gz fa5ad2b9092b6ffb675996b6141db78f917aa8403f9953f5e587f5458c85831e 21007758
+macos-arm64 cosyncing-client-0.7.0-macos-arm64-unsigned.zip 85472409873923079faee6c6e7caf72b9b8dae79e23e7c44718ec0279c3c2129 38143785
+windows-x64 cosyncing-client-0.7.0-windows-x64-unsigned.zip 3d0bf568878daa39a266671febbc65b9fb988895f3155ff3bd8a82fcc19c44b3 24247663'
 
 # The one host this installer supports. Windows ARM64 and an x64 process emulated on ARM64 are refused
 # below, so there is nothing to select between.
@@ -1135,8 +1135,7 @@ function Approve-NpmApplicationTakeover {
 
   if ([Console]::IsInputRedirected) {
     Fail ('replacing an npm install needs your answer and no console input is attached. Rerun this ' +
-      'installer from a PowerShell window, or stay on npm with: npm update -g cosyncing; then ' +
-      "& '$BunBin' '$Application' setup")
+      'installer from a PowerShell window to confirm migration; the existing installation is unchanged.')
   }
 
   if ((Read-Host "Replace it with cosyncing $Version? [y/N]") -notmatch '^(y|yes)$') {
@@ -1553,32 +1552,6 @@ try {
     Write-Output "PATH: could not be updated. Run cosyncing with its full path, or add $installDir by hand."
   }
 
-  # The npm package is preserved by design - `uninstall` says the same thing - but after a takeover it is
-  # a loaded gun: its own `setup` copies itself back over the application just placed, and the next run of
-  # this installer would then refuse again. Offer to remove it, and never fail the install over the answer.
-  if ($AdoptedNpmInstall) {
-    $npmRoot = ''
-    if (Get-Command npm -CommandType Application -ErrorAction SilentlyContinue) {
-      $npmProbe = Invoke-Native -FilePath 'npm' -ArgumentList @('root', '-g')
-      if ($npmProbe.ExitCode -eq 0) { $npmRoot = $npmProbe.StdOut.Trim() }
-    }
-    if ($npmRoot -and (Test-Path -LiteralPath (Join-Path $npmRoot 'cosyncing') -PathType Container)) {
-      Write-Output ''
-      Write-Output "The npm package it came from is still installed at $npmRoot\cosyncing."
-      Write-Output 'Its own setup would copy itself back over the install just made.'
-      if ((Read-Host 'Remove it now? [y/N]') -match '^(y|yes)$') {
-        $removal = Invoke-Native -FilePath 'npm' -ArgumentList @('uninstall', '-g', 'cosyncing')
-        if ($removal.ExitCode -eq 0) {
-          Write-Output 'Removed the npm package.'
-        } else {
-          Write-Output 'Could not remove the npm package; remove it by hand: npm uninstall -g cosyncing'
-        }
-      } else {
-        Write-Output 'Left it in place. Remove it later with: npm uninstall -g cosyncing'
-      }
-    }
-  }
-
   if ($INSTALL_MODE -cne 'all') {
     # Named, not removed. This installer does not run setup, so the service is still the previous broker
     # and still serving out of one of these; setup is what moves it to the new root.
@@ -1785,6 +1758,30 @@ try {
   if ($setupExit -ne 0) {
     Fail ("setup did not complete; the broker files are installed. Rerun: " +
       "& '$bunBin' '$application' setup")
+  }
+
+  # Setup succeeded with the replacement. Keep the old package until this point for recovery.
+  if ($AdoptedNpmInstall) {
+    $npmRoot = ''
+    if (Get-Command npm -CommandType Application -ErrorAction SilentlyContinue) {
+      $npmProbe = Invoke-Native -FilePath 'npm' -ArgumentList @('root', '-g')
+      if ($npmProbe.ExitCode -eq 0) { $npmRoot = $npmProbe.StdOut.Trim() }
+    }
+    if ($npmRoot -and (Test-Path -LiteralPath (Join-Path $npmRoot 'cosyncing') -PathType Container)) {
+      Write-Output ''
+      Write-Output "The npm package it came from is still installed at $npmRoot\cosyncing."
+      Write-Output 'Its own setup would copy itself back over the install just made.'
+      if ((Read-Host 'Remove it now? [y/N]') -match '^(y|yes)$') {
+        $removal = Invoke-Native -FilePath 'npm' -ArgumentList @('uninstall', '-g', 'cosyncing')
+        if ($removal.ExitCode -eq 0) {
+          Write-Output 'Removed the npm package.'
+        } else {
+          Write-Output 'Could not remove the npm package; remove it by hand: npm uninstall -g cosyncing'
+        }
+      } else {
+        Write-Output 'Left it in place. Remove it later with: npm uninstall -g cosyncing'
+      }
+    }
   }
 
   # Setup has rewritten the service definition and restarted it against the new web root, so every other
