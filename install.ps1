@@ -25,8 +25,8 @@ $ProgressPreference = 'SilentlyContinue'
 # release host requires TLS 1.2. The shell installer states the same floor with `--tlsv1.2`.
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$VERSION = '0.7.1'
-$BASE_URL = 'https://github.com/cosyncing/cosyncing/releases/download/broker-v0.7.1'
+$VERSION = '0.7.2'
+$BASE_URL = 'https://github.com/cosyncing/cosyncing/releases/download/broker-v0.7.2'
 $KEY_ID = 'cosyncing-release-2026-09-13'
 # Only the P-256 key is embedded. The Ed25519 sibling is deliberately absent: Windows CNG exposes no
 # Ed25519 algorithm identifier and .NET Framework has no implementation, so carrying that key would ship a
@@ -40,8 +40,8 @@ $MINIMUM_BUN = '1.3.14'
 # The Bun this installer places, which every BUN_TABLE build is. Never below MINIMUM_BUN.
 $PINNED_BUN = '1.3.14'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-$ARTIFACT_TABLE = 'cosyncing-app.js 02c74284146a3647d42f26dca599356de30a3a47a6528c4ec13a157fbc41ae7a 3111232
-cosyncing-web-app.tar.gz 6037ade4d9a4460833c0f6038aac98cf328b03afc3103fcf255b0440d4bfaced 18681941'
+$ARTIFACT_TABLE = 'cosyncing-app.js 427cc9604c9890c55482aa70dc1dcbfdfa26eea37e9852a9f4e03108784ec128 3158513
+cosyncing-web-app.tar.gz 0cc6ea493d71f3ab05765e7913dcca15bc9946a8d444c23865068bb4775120a3 18720774'
 # Official Bun builds for PINNED_BUN, most likely first: "<host> <asset> <sha256>". One table serves both
 # installers, so rows for hosts this script cannot run on are present and inert.
 $BUN_TABLE = 'linux-x64 bun-linux-x64.zip 951ee2aee855f08595aeec6225226a298d3fea83a3dcd6465c09cbccdf7e848f
@@ -61,9 +61,9 @@ $BUN_RELEASE_BASE = 'https://github.com/oven-sh/bun/releases/download'
 $INSTALL_MODE = 'all'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". One table serves all
 # four installers, so rows for hosts this script cannot run on are present and inert.
-$CLIENT_TABLE = 'linux-x64 cosyncing-client-0.7.1-linux-x64.tar.gz dacb90c674cff0c3e44fd0f6e95d228dfb8eac25c38b1770a5c38d32477b684c 21022951
-macos-arm64 cosyncing-client-0.7.1-macos-arm64-unsigned.zip 5b3824696f223f42e753bd55aad3c97489127f935d0ee31ce2dd09c1df583af4 38169460
-windows-x64 cosyncing-client-0.7.1-windows-x64-unsigned.zip 2e44322391abf9d7914dd08de011c93a9d9683f949312e52602032c9cf35c17a 24261512'
+$CLIENT_TABLE = 'linux-x64 cosyncing-client-0.7.2-linux-x64.tar.gz 8476fc7b13812dffd2f48e6d6cce75f7e891bf3e7e68bda2c7ce9081a1738ade 21151792
+macos-arm64 cosyncing-client-0.7.2-macos-arm64-unsigned.zip a0e609e0db2ab4140e8209d54c9ba92f2998984ba1bfa3e4c300c14342fad9b8 38460574
+windows-x64 cosyncing-client-0.7.2-windows-x64-unsigned.zip d28336a77e5909470b915b632fc2b36a2bec597843bace6a40428e8a6001047f 24398710'
 
 # The one host this installer supports. Windows ARM64 and an x64 process emulated on ARM64 are refused
 # below, so there is nothing to select between.

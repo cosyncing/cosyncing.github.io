@@ -3,8 +3,8 @@ set -eu
 
 umask 077
 
-VERSION='0.7.1'
-BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.7.1'
+VERSION='0.7.2'
+BASE_URL='https://github.com/cosyncing/cosyncing/releases/download/broker-v0.7.2'
 KEY_ID='cosyncing-release-2026-09-13'
 PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUNvd0JRWURLMlZ3QXlFQTIxMi9qTUZHSGVNQTRHRkFOY3F1aHJqeHpOT0EzN1hYcFViWWo0bHVzSTg9Ci0tLS0tRU5EIFBVQkxJQyBLRVktLS0tLQo='
 P256_PUBLIC_KEY_B64='LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemowQ0FRWUlLb1pJemowREFRY0RRZ0FFWWR3Rm14Wk11NFNyTnpJMkFycm9jODNOcWxWVQp1RGR4OUFlR2lsVGlMaWFaMW1haEFzanRqb3hvMjZRTlAybm5JQ3VYcitpSVFyUlFXUlBKOFgrTEZRPT0KLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=='
@@ -16,8 +16,8 @@ MINIMUM_BUN='1.3.14'
 # The Bun this installer places, which every BUN_TABLE build is. Never below MINIMUM_BUN.
 PINNED_BUN='1.3.14'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-ARTIFACT_TABLE='cosyncing-app.js 02c74284146a3647d42f26dca599356de30a3a47a6528c4ec13a157fbc41ae7a 3111232
-cosyncing-web-app.tar.gz 6037ade4d9a4460833c0f6038aac98cf328b03afc3103fcf255b0440d4bfaced 18681941'
+ARTIFACT_TABLE='cosyncing-app.js 427cc9604c9890c55482aa70dc1dcbfdfa26eea37e9852a9f4e03108784ec128 3158513
+cosyncing-web-app.tar.gz 0cc6ea493d71f3ab05765e7913dcca15bc9946a8d444c23865068bb4775120a3 18720774'
 # Official Bun builds for PINNED_BUN, most likely first: "<host> <asset> <sha256>".
 BUN_TABLE='linux-x64 bun-linux-x64.zip 951ee2aee855f08595aeec6225226a298d3fea83a3dcd6465c09cbccdf7e848f
 linux-x64 bun-linux-x64-baseline.zip a063908ae08b7852ca10939bbdc6ceed3ddabce8fb9402dce83d65d73b36e6c7
@@ -36,9 +36,9 @@ BUN_RELEASE_BASE='https://github.com/oven-sh/bun/releases/download'
 INSTALL_MODE='server'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". Rows for hosts this
 # script cannot resolve are inert, exactly like the Bun table's.
-CLIENT_TABLE='linux-x64 cosyncing-client-0.7.1-linux-x64.tar.gz dacb90c674cff0c3e44fd0f6e95d228dfb8eac25c38b1770a5c38d32477b684c 21022951
-macos-arm64 cosyncing-client-0.7.1-macos-arm64-unsigned.zip 5b3824696f223f42e753bd55aad3c97489127f935d0ee31ce2dd09c1df583af4 38169460
-windows-x64 cosyncing-client-0.7.1-windows-x64-unsigned.zip 2e44322391abf9d7914dd08de011c93a9d9683f949312e52602032c9cf35c17a 24261512'
+CLIENT_TABLE='linux-x64 cosyncing-client-0.7.2-linux-x64.tar.gz 8476fc7b13812dffd2f48e6d6cce75f7e891bf3e7e68bda2c7ce9081a1738ade 21151792
+macos-arm64 cosyncing-client-0.7.2-macos-arm64-unsigned.zip a0e609e0db2ab4140e8209d54c9ba92f2998984ba1bfa3e4c300c14342fad9b8 38460574
+windows-x64 cosyncing-client-0.7.2-windows-x64-unsigned.zip d28336a77e5909470b915b632fc2b36a2bec597843bace6a40428e8a6001047f 24398710'
 
 fail() {
   # Mirrors install.ps1: a red marker in front of a plain sentence, and only when stderr is a terminal,
@@ -1203,6 +1203,13 @@ fi
 
 # Where the client will look, which is not always where the broker keeps its state. On a sandboxed macOS
 # client that is the container; everywhere else it is the state home the installer and broker share.
+if [ "$OS" = Darwin ] && [ -z "$CLIENT_SKIP" ]; then
+  # The sandboxed app cannot spawn Bun outside its container. Install its narrow,
+  # independent same-user helper through the already authenticated JS bundle.
+  if ! "$BUN_BIN" "$APPLICATION" client-update install-helper >/dev/null; then
+    printf 'Desktop updates: helper setup needs attention; Download remains available.\n' >&2
+  fi
+fi
 HANDOFF_HOME="$STATE_HOME"
 if [ -n "$CLIENT_CONTAINER" ]; then
   HANDOFF_HOME="$CLIENT_CONTAINER/.cosyncing"
