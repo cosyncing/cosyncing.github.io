@@ -25,8 +25,8 @@ $ProgressPreference = 'SilentlyContinue'
 # release host requires TLS 1.2. The shell installer states the same floor with `--tlsv1.2`.
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
 
-$VERSION = '0.7.2'
-$BASE_URL = 'https://github.com/cosyncing/cosyncing/releases/download/broker-v0.7.2'
+$VERSION = '0.8.0'
+$BASE_URL = 'https://github.com/cosyncing/cosyncing/releases/download/broker-v0.8.0'
 $KEY_ID = 'cosyncing-release-2026-09-13'
 # Only the P-256 key is embedded. The Ed25519 sibling is deliberately absent: Windows CNG exposes no
 # Ed25519 algorithm identifier and .NET Framework has no implementation, so carrying that key would ship a
@@ -36,23 +36,23 @@ $P256_PUBLIC_KEY_B64 = 'LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUZrd0V3WUhLb1pJemow
 $APP_ASSET = 'cosyncing-app.js'
 $WEB_ASSET = 'cosyncing-web-app.tar.gz'
 # The oldest Bun this release's bundle runs under: the floor the broker itself enforces.
-$MINIMUM_BUN = '1.3.14'
+$MINIMUM_BUN = '1.4.3'
 # The Bun this installer places, which every BUN_TABLE build is. Never below MINIMUM_BUN.
-$PINNED_BUN = '1.3.14'
+$PINNED_BUN = '1.4.3'
 # One row per artifact this installer places: "<name> <sha256> <size>".
-$ARTIFACT_TABLE = 'cosyncing-app.js 427cc9604c9890c55482aa70dc1dcbfdfa26eea37e9852a9f4e03108784ec128 3158513
-cosyncing-web-app.tar.gz 0cc6ea493d71f3ab05765e7913dcca15bc9946a8d444c23865068bb4775120a3 18720774'
+$ARTIFACT_TABLE = 'cosyncing-app.js e83ce87a930aa18b197709862af373eda04e3914a9c30c59558910626f182ee7 3163045
+cosyncing-web-app.tar.gz 5637280aba3a7f0d7556584ed28d9a8dd59914f2f05f36682ffd21e6a2cc5262 18817362'
 # Official Bun builds for PINNED_BUN, most likely first: "<host> <asset> <sha256>". One table serves both
 # installers, so rows for hosts this script cannot run on are present and inert.
-$BUN_TABLE = 'linux-x64 bun-linux-x64.zip 951ee2aee855f08595aeec6225226a298d3fea83a3dcd6465c09cbccdf7e848f
-linux-x64 bun-linux-x64-baseline.zip a063908ae08b7852ca10939bbdc6ceed3ddabce8fb9402dce83d65d73b36e6c7
-linux-x64 bun-linux-x64-musl.zip 14bd9aedeebf1dba67e8def9531c89bc989ecfdf1de42e5bfcaf1b8cd9294719
-linux-x64 bun-linux-x64-musl-baseline.zip 56a7d6806cf155536c0178f0ea5fbd098e684fa509ebdb4fc0a7e19fb65382dc
-linux-arm64 bun-linux-aarch64.zip a27ffb63a8310375836e0d6f668ae17fa8d8d18b88c37c821c65331973a19a3b
-linux-arm64 bun-linux-aarch64-musl.zip b98e0ad3625c5c00d1d5b5ff55605c7adddbfae151861e68ade57b2d3b8703bb
-darwin-arm64 bun-darwin-aarch64.zip d8b96221828ad6f97ac7ac0ab7e95872341af763001e8803e8267652c2652620
-windows-x64 bun-windows-x64.zip 0a0620930b6675d7ba440e81f4e0e00d3cfbe096c4b140d3fff02205e9e18922
-windows-x64 bun-windows-x64-baseline.zip 538f9c846355d9e847b2671bc00c47da4229a0befb24df3282b739770f3b475f'
+$BUN_TABLE = 'linux-x64 bun-linux-x64.zip 3e730528d89775f03f87f05c06787c4df4099d0a37f3f252e7b829cb23816e18
+linux-x64 bun-linux-x64-baseline.zip 1fc2edac843102909e3a1be1d8d9802cc6071cf074e67e88231f4ffe0f8b397b
+linux-x64 bun-linux-x64-musl.zip 6e9ea98554ea0d05efda5840ae292618aaa3adefd66b0853520c5c86a37eac9c
+linux-x64 bun-linux-x64-musl-baseline.zip 4b5b0b5503f6ebf15161e8c56eb5a263134c05cd98a86dc11ee43ac5bda9862e
+linux-arm64 bun-linux-aarch64.zip efa9813da5ed72423bf847f916e8d2c47c0d776add972354026a75e10da9aa21
+linux-arm64 bun-linux-aarch64-musl.zip 8de8a0003cc2707bb555887e3d450e24e1edf3f605f491393e89ed61a8853420
+darwin-arm64 bun-darwin-aarch64.zip 80afd4c069b46a6fa8f3ec520bebc750a7843e4a8d5b9583d29ad436c00a3403
+windows-x64 bun-windows-x64.zip 0bf84e808552beea67bf1202a287a35c6c825d837b287b3f8e9dd513dba35d3d
+windows-x64 bun-windows-x64-baseline.zip d7a7d3eb216614544aab0cde2d8d9f2e4e87839bf5a30a1cd11d077f02d84e0c'
 $BUN_RELEASE_BASE = 'https://github.com/oven-sh/bun/releases/download'
 # What this installer installs. `all` places the desktop GUI client too, runs setup, and hands the client
 # a pairing; `server` stops after the broker's own files, which is what this installer did before the
@@ -61,9 +61,9 @@ $BUN_RELEASE_BASE = 'https://github.com/oven-sh/bun/releases/download'
 $INSTALL_MODE = 'server'
 # One row per desktop client this release publishes: "<host> <asset> <sha256> <size>". One table serves all
 # four installers, so rows for hosts this script cannot run on are present and inert.
-$CLIENT_TABLE = 'linux-x64 cosyncing-client-0.7.2-linux-x64.tar.gz 8476fc7b13812dffd2f48e6d6cce75f7e891bf3e7e68bda2c7ce9081a1738ade 21151792
-macos-arm64 cosyncing-client-0.7.2-macos-arm64-unsigned.zip a0e609e0db2ab4140e8209d54c9ba92f2998984ba1bfa3e4c300c14342fad9b8 38460574
-windows-x64 cosyncing-client-0.7.2-windows-x64-unsigned.zip d28336a77e5909470b915b632fc2b36a2bec597843bace6a40428e8a6001047f 24398710'
+$CLIENT_TABLE = 'linux-x64 cosyncing-client-0.8.0-linux-x64.tar.gz 343f2ffd0a371780f99943d8681c58cf06de5ee3629109bcf12bcc220a6d1f7a 21519340
+macos-arm64 cosyncing-client-0.8.0-macos-arm64-unsigned.zip 2471bce67c0e568f107d21317fc735ced1dadec000170fed37570c6c53b81869 39222459
+windows-x64 cosyncing-client-0.8.0-windows-x64-unsigned.zip df88be4d46b0f58af4d5b1822e58b7913fe3c2813370fd74477f9b452516644f 24803377'
 
 # The one host this installer supports. Windows ARM64 and an x64 process emulated on ARM64 are refused
 # below, so there is nothing to select between.
